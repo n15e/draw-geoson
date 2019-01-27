@@ -6,7 +6,7 @@ const modifiedDefaultStyles = theme.map(defaultStyle => {
       ...defaultStyle,
       filter: [
         ...defaultStyle.filter,
-        ['!=', 'mode', 'snap'],
+        ['!=', 'user_isSnapGuide', 'true'],
       ],
     };
   }
