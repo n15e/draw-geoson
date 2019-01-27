@@ -1,7 +1,14 @@
 import Constants from '@mapbox/mapbox-gl-draw/src/constants';
 import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
 import DrawPolygon from '@mapbox/mapbox-gl-draw/src/modes/draw_polygon';
-import { addPointToGuides, findGuidesFromFeatures, IDS, roundLngLatTo1Cm, snap } from './snapUtils';
+import {
+  addPointToGuides,
+  findGuidesFromFeatures,
+  getGuideFeature,
+  IDS,
+  roundLngLatTo1Cm,
+  snap,
+} from './snapUtils';
 
 const SnapMode = {...DrawPolygon};
 
@@ -15,34 +22,12 @@ SnapMode.onSetup = function({ snapPx = 10, draw }) {
     },
   });
 
-  // Temporary guide lines
-  const verticalLine = this.newFeature({
-    id: IDS.VERTICAL_LINE_GUIDE,
-    type: Constants.geojsonTypes.FEATURE,
-    properties: {
-      isSnapGuide: 'true', // for styling
-    },
-    geometry: {
-      type: Constants.geojsonTypes.LINE_STRING,
-      coordinates: [],
-    },
-  });
-
-  const horizontalLine = this.newFeature({
-    id: IDS.HORIZONTAL_LINE_GUIDE,
-    type: Constants.geojsonTypes.FEATURE,
-    properties: {
-      isSnapGuide: 'true',
-    },
-    geometry: {
-      type: Constants.geojsonTypes.LINE_STRING,
-      coordinates: [],
-    },
-  });
+  const verticalGuide = this.newFeature(getGuideFeature(IDS.VERTICAL_GUIDE));
+  const horizontalGuide = this.newFeature(getGuideFeature(IDS.HORIZONTAL_GUIDE));
 
   this.addFeature(polygon);
-  this.addFeature(verticalLine);
-  this.addFeature(horizontalLine);
+  this.addFeature(verticalGuide);
+  this.addFeature(horizontalGuide);
   this.clearSelectedFeatures();
   doubleClickZoom.disable(this);
 
@@ -51,11 +36,11 @@ SnapMode.onSetup = function({ snapPx = 10, draw }) {
     currentVertexPosition: 0,
     draw,
     guides: findGuidesFromFeatures(this.map, draw, polygon.id),
-    horizontalLine,
+    horizontalGuide,
     map: this.map,
     polygon,
     snapPx,
-    verticalLine,
+    verticalGuide,
   };
 
   this.map.on('moveend', () => {
@@ -103,11 +88,11 @@ SnapMode.onMouseMove = function(state, e) {
 
 // This is 'extending' DrawPolygon.toDisplayFeatures
 SnapMode.toDisplayFeatures = function(state, geojson, display) {
-  if (geojson.properties.id === IDS.VERTICAL_LINE_GUIDE && !state.showVerticalSnapLine) {
+  if (geojson.properties.id === IDS.VERTICAL_GUIDE && !state.showVerticalSnapLine) {
     return;
   }
 
-  if (geojson.properties.id === IDS.HORIZONTAL_LINE_GUIDE && !state.showHorizontalSnapLine) {
+  if (geojson.properties.id === IDS.HORIZONTAL_GUIDE && !state.showHorizontalSnapLine) {
     return;
   }
 
@@ -117,8 +102,8 @@ SnapMode.toDisplayFeatures = function(state, geojson, display) {
 
 // This is 'extending' DrawPolygon.onStop
 SnapMode.onStop = function(state) {
-  this.deleteFeature(IDS.VERTICAL_LINE_GUIDE, { silent: true });
-  this.deleteFeature(IDS.HORIZONTAL_LINE_GUIDE, { silent: true });
+  this.deleteFeature(IDS.VERTICAL_GUIDE, { silent: true });
+  this.deleteFeature(IDS.HORIZONTAL_GUIDE, { silent: true });
 
   // This relies on the the state of SnapMode being similar to DrawPolygon
   DrawPolygon.onStop.call(this, state);
