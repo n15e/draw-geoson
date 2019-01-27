@@ -1,14 +1,16 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core';
+import AspectRatioIcon from '@material-ui/icons/AspectRatio';
+import Button from '@material-ui/core/es/Button/Button';
 import Divider from '@material-ui/core/es/Divider/Divider';
 import Drawer from '@material-ui/core/Drawer';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import TextField from '@material-ui/core/TextField';
-import AspectRatioIcon from '@material-ui/icons/AspectRatio';
 import PlaceIcon from '@material-ui/icons/Place';
+import TextField from '@material-ui/core/TextField';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import Map from './Map/Map';
 import './App.css';
@@ -37,6 +39,9 @@ const styles = () => ({
   map: {
     flex: 1,
   },
+  buttonIcon: {
+    marginRight: 8,
+  },
 });
 
 const getRotation = () => {
@@ -54,6 +59,43 @@ class App extends React.PureComponent {
     map: null,
     draw: null,
   };
+
+  fileUploadEl = React.createRef();
+
+  handleFile(file) {
+    try {
+      const fileReader = new FileReader();
+
+      fileReader.onload = e => {
+        const rawGeojson = JSON.parse(e.target.result);
+
+        // Strip out potential junk like a crs prop that Mapbox won't like
+        const geojson = {
+          features: rawGeojson.features,
+          type: rawGeojson.type,
+        };
+
+        this.state.draw.add(geojson);
+
+        try {
+          const firstFeature = rawGeojson.features[0];
+          if (firstFeature.geometry.type === 'Point') {
+            this.state.map.setCenter(firstFeature.geometry.coordinates);
+          } else if (firstFeature.geometry.type === 'LineString') {
+            this.state.map.setCenter(firstFeature.geometry.coordinates[0]);
+          } else if (firstFeature.geometry.type === 'Polygon') {
+            this.state.map.setCenter(firstFeature.geometry.coordinates[0][0]);
+          }
+          // TODO (davidg): get bbox and zoom, or whatever
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fileReader.readAsText(file);
+    } catch(err) {
+      console.error(err);
+    }
+  }
 
   render() {
     const { classes } = this.props;
@@ -148,6 +190,43 @@ class App extends React.PureComponent {
                     }}
                   />
                 </ListItem>
+
+                <Divider />
+
+                <ListItem>
+                  <ListItemText
+                    primary="Import/export"
+                    classes={{
+                      primary: classes.sectionTitle,
+                    }}
+                  />
+                </ListItem>
+
+                <ListItem>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      this.fileUploadEl.current.click();
+                    }}
+                  >
+                    <InsertDriveFileIcon className={classes.buttonIcon} />
+
+                    Load from file
+                  </Button>
+
+                  {/* hidden input for file upload */}
+                  <input
+                    type="file"
+                    accept=".json,.geojson"
+                    ref={this.fileUploadEl}
+                    hidden
+                    onChange={(e) => {
+                      this.handleFile(e.target.files[0]);
+                    }}
+                  />
+                </ListItem>
+
               </React.Fragment>
             )}
           </List>
