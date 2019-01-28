@@ -44,18 +44,9 @@ const styles = () => ({
   },
 });
 
-const getRotation = () => {
-  const rotation = window.localStorage.rotation;
-  return rotation ? Number(rotation) : 29.1; // New York
-};
-
-const setRotation = rotation => {
-  window.localStorage.rotation = rotation;
-};
-
 class App extends React.PureComponent {
   state = {
-    rotation: getRotation(),
+    rotation: 0,
     map: null,
     draw: null,
   };
@@ -198,8 +189,6 @@ class App extends React.PureComponent {
                     onChange={e => {
                       const rotation = Number(e.target.value || 0);
                       this.setState({rotation});
-
-                      setRotation(rotation)
                     }}
                   />
                 </ListItem>
@@ -248,12 +237,11 @@ class App extends React.PureComponent {
         <Map
           className={classes.map}
           rotation={this.state.rotation}
-          onMapReady={({ draw, map }) => {
-            this.setState({ draw, map });
+          onMapReady={({ draw, map, rotation }) => {
+            this.setState({ draw, map, rotation });
           }}
           onRotationChange={rotation => {
             this.setState({ rotation });
-            setRotation(rotation);
           }}
         />
       </div>

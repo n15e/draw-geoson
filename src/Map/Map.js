@@ -17,7 +17,6 @@ class Map extends React.PureComponent {
       style: 'mapbox://styles/mapbox/streets-v9',
       center: [-73.979582, 40.764116],
       zoom: 14.5,
-      bearing: this.props.rotation,
       hash: true,
     });
 
@@ -36,7 +35,11 @@ class Map extends React.PureComponent {
     this.map.addControl(new mapboxGl.NavigationControl(), 'top-right');
 
     this.map.on('load', () => {
-      this.props.onMapReady({ map: this.map, draw: this.draw });
+      this.props.onMapReady({
+        map: this.map,
+        draw: this.draw,
+        rotation: this.map.getBearing(), // potentially set from the URL
+      });
     });
 
     this.map.on('rotate', () => {
