@@ -7,6 +7,7 @@ import {
   getGuideFeature,
   IDS,
   roundLngLatTo1Cm,
+  shouldHideGuide,
   snap,
 } from './snapUtils';
 
@@ -90,13 +91,7 @@ SnapLineMode.onMouseMove = function(state, e) {
 
 // This is 'extending' DrawLine.toDisplayFeatures
 SnapLineMode.toDisplayFeatures = function(state, geojson, display) {
-  if (geojson.properties.id === IDS.VERTICAL_GUIDE && !state.showVerticalSnapLine) {
-    return;
-  }
-
-  if (geojson.properties.id === IDS.HORIZONTAL_GUIDE && !state.showHorizontalSnapLine) {
-    return;
-  }
+  if (shouldHideGuide(state, geojson)) return;
 
   // This relies on the the state of SnapLineMode being similar to DrawLine
   DrawLine.toDisplayFeatures(state, geojson, display);

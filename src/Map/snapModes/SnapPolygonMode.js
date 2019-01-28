@@ -7,6 +7,7 @@ import {
   getGuideFeature,
   IDS,
   roundLngLatTo1Cm,
+  shouldHideGuide,
   snap,
 } from './snapUtils';
 
@@ -88,13 +89,7 @@ SnapPolygonMode.onMouseMove = function(state, e) {
 
 // This is 'extending' DrawPolygon.toDisplayFeatures
 SnapPolygonMode.toDisplayFeatures = function(state, geojson, display) {
-  if (geojson.properties.id === IDS.VERTICAL_GUIDE && !state.showVerticalSnapLine) {
-    return;
-  }
-
-  if (geojson.properties.id === IDS.HORIZONTAL_GUIDE && !state.showHorizontalSnapLine) {
-    return;
-  }
+  if (shouldHideGuide(state, geojson)) return;
 
   // This relies on the the state of SnapPolygonMode being similar to DrawPolygon
   DrawPolygon.toDisplayFeatures(state, geojson, display);

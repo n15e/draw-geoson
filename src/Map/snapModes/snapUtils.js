@@ -205,3 +205,15 @@ export const getGuideFeature = id => ({
     coordinates: [],
   },
 });
+
+export const shouldHideGuide = (state, geojson) => {
+  if (geojson.properties.id === IDS.VERTICAL_GUIDE && !state.showVerticalSnapLine) {
+    return true;
+  }
+
+  if (geojson.properties.id === IDS.HORIZONTAL_GUIDE && !state.showHorizontalSnapLine) {
+    return true;
+  }
+
+  return false;
+};

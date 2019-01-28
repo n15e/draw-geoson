@@ -6,6 +6,7 @@ import {
   getGuideFeature,
   IDS,
   roundLngLatTo1Cm,
+  shouldHideGuide,
   snap,
 } from './snapUtils';
 
@@ -70,13 +71,7 @@ SnapPointMode.onMouseMove = function(state, e) {
 
 // This is 'extending' DrawPoint.toDisplayFeatures
 SnapPointMode.toDisplayFeatures = function(state, geojson, display) {
-  if (geojson.properties.id === IDS.VERTICAL_GUIDE && !state.showVerticalSnapLine) {
-    return;
-  }
-
-  if (geojson.properties.id === IDS.HORIZONTAL_GUIDE && !state.showHorizontalSnapLine) {
-    return;
-  }
+  if (shouldHideGuide(state, geojson)) return;
 
   // This relies on the the state of SnapPointMode having a 'point' prop
   DrawPoint.toDisplayFeatures(state, geojson, display);
