@@ -132,7 +132,14 @@ class App extends React.PureComponent {
                   />
                 </ListItem>
 
-                <ListItem button disabled >
+                <ListItem
+                  button
+                  onClick={() => {
+                    this.state.draw.changeMode('snap_point', {
+                      draw: this.state.draw,
+                    });
+                  }}
+                >
                   <ListItemIcon>
                     <PlaceIcon />
                   </ListItemIcon>
@@ -140,7 +147,14 @@ class App extends React.PureComponent {
                   <ListItemText primary="Snappy point" />
                 </ListItem>
 
-                <ListItem button disabled >
+                <ListItem
+                  button
+                  onClick={() => {
+                    this.state.draw.changeMode('snap_line', {
+                      draw: this.state.draw,
+                    });
+                  }}
+                >
                   <ListItemIcon>
                     <TimelineIcon />
                   </ListItemIcon>
@@ -151,9 +165,8 @@ class App extends React.PureComponent {
                 <ListItem
                   button
                   onClick={() => {
-                    this.state.draw.changeMode('snap', {
+                    this.state.draw.changeMode('snap_polygon', {
                       draw: this.state.draw,
-                      snapPx: 10,
                     });
                   }}
                 >

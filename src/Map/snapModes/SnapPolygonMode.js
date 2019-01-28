@@ -10,9 +10,9 @@ import {
   snap,
 } from './snapUtils';
 
-const SnapMode = {...DrawPolygon};
+const SnapPolygonMode = {...DrawPolygon};
 
-SnapMode.onSetup = function({ snapPx = 10, draw }) {
+SnapPolygonMode.onSetup = function({ snapPx = 10, draw }) {
   const polygon = this.newFeature({
     type: Constants.geojsonTypes.FEATURE,
     properties: {},
@@ -35,7 +35,7 @@ SnapMode.onSetup = function({ snapPx = 10, draw }) {
   const state = {
     currentVertexPosition: 0,
     draw,
-    guides: findGuidesFromFeatures(this.map, draw, polygon.id),
+    guides: findGuidesFromFeatures(this.map, draw, polygon),
     horizontalGuide,
     map: this.map,
     polygon,
@@ -45,13 +45,13 @@ SnapMode.onSetup = function({ snapPx = 10, draw }) {
 
   this.map.on('moveend', () => {
     // Update the guide locations after zoom, pan, rotate, or resize
-    state.guides = findGuidesFromFeatures(this.map, draw, polygon.id);
+    state.guides = findGuidesFromFeatures(this.map, draw, polygon);
   });
 
   return state;
 };
 
-SnapMode.onClick = function(state) {
+SnapPolygonMode.onClick = function(state) {
   // We save some processing by rounding on click, not mousemove
   const lng = roundLngLatTo1Cm(state.snappedLng);
   const lat = roundLngLatTo1Cm(state.snappedLat);
@@ -76,7 +76,7 @@ SnapMode.onClick = function(state) {
   state.polygon.updateCoordinate(`0.${state.currentVertexPosition}`, lng, lat);
 };
 
-SnapMode.onMouseMove = function(state, e) {
+SnapPolygonMode.onMouseMove = function(state, e) {
   const { lng, lat } = snap(state, e);
 
   state.polygon.updateCoordinate(`0.${state.currentVertexPosition}`, lng, lat);
@@ -87,7 +87,7 @@ SnapMode.onMouseMove = function(state, e) {
 };
 
 // This is 'extending' DrawPolygon.toDisplayFeatures
-SnapMode.toDisplayFeatures = function(state, geojson, display) {
+SnapPolygonMode.toDisplayFeatures = function(state, geojson, display) {
   if (geojson.properties.id === IDS.VERTICAL_GUIDE && !state.showVerticalSnapLine) {
     return;
   }
@@ -96,17 +96,17 @@ SnapMode.toDisplayFeatures = function(state, geojson, display) {
     return;
   }
 
-  // This relies on the the state of SnapMode being similar to DrawPolygon
+  // This relies on the the state of SnapPolygonMode being similar to DrawPolygon
   DrawPolygon.toDisplayFeatures(state, geojson, display);
 };
 
 // This is 'extending' DrawPolygon.onStop
-SnapMode.onStop = function(state) {
+SnapPolygonMode.onStop = function(state) {
   this.deleteFeature(IDS.VERTICAL_GUIDE, { silent: true });
   this.deleteFeature(IDS.HORIZONTAL_GUIDE, { silent: true });
 
-  // This relies on the the state of SnapMode being similar to DrawPolygon
+  // This relies on the the state of SnapPolygonMode being similar to DrawPolygon
   DrawPolygon.onStop.call(this, state);
 };
 
-export default SnapMode;
+export default SnapPolygonMode;

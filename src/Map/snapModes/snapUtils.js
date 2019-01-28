@@ -1,5 +1,14 @@
 import Constants from '@mapbox/mapbox-gl-draw/src/constants';
 
+export const IDS = {
+  VERTICAL_GUIDE: 'VERTICAL_GUIDE',
+  HORIZONTAL_GUIDE: 'HORIZONTAL_GUIDE',
+};
+
+// Note: this lng/lat rounding doesn't have anything to do with snapping,
+// but can reduce output file size quite a lot
+// There's not much point in 13 decimal places of lng/lat.
+
 // Number of decimal places in lat/lng values
 // One day could be configurable
 export const ACCURACY = {
@@ -9,15 +18,8 @@ export const ACCURACY = {
   '1 mm': 8,
 };
 
-export const IDS = {
-  VERTICAL_GUIDE: 'VERTICAL_GUIDE',
-  HORIZONTAL_GUIDE: 'HORIZONTAL_GUIDE',
-};
-
 const round = (num, decimals) => Math.round(num * 10 ** decimals) / 10 ** decimals;
 
-// There's not much point in 13 decimal places of lng/lat,
-// so we round to the nearest cm when storing the lat/lng
 export const roundLngLatTo1Cm = num => round(num, ACCURACY['1 cm']);
 
 /**
@@ -55,10 +57,10 @@ export const addPointToGuides = (guides, point, forceInclusion) => {
  *
  * @param map
  * @param draw
- * @param polygonId
+ * @param currentFeature
  * @returns {{vertical: Array, horizontal: Array}}
  */
-export const findGuidesFromFeatures = (map, draw, polygonId) => {
+export const findGuidesFromFeatures = (map, draw, currentFeature) => {
   const features = draw.getAll().features;
 
   const guides = {
@@ -67,7 +69,7 @@ export const findGuidesFromFeatures = (map, draw, polygonId) => {
   };
 
   features.forEach(feature => {
-    const isTheCurrentPolygon = feature.id === polygonId;
+    const isTheCurrentFeature = feature.id === currentFeature.id;
 
     // If this is re-running because a user is moving the map, the features might include
     // guides or the last leg of a polygon
@@ -82,17 +84,21 @@ export const findGuidesFromFeatures = (map, draw, polygonId) => {
       } else {
         // If not an array of arrays, only consider arrays with two items
         if (array.length === 2) {
-          addPointToGuides(guides, map.project(array), isTheCurrentPolygon);
+          addPointToGuides(guides, map.project(array), isTheCurrentFeature);
         }
       }
     };
 
-    // For the current polygon, the last two points are the mouse position and back home
-    // so we chop those off (else we get guides showing where the user clicked, even
-    // if they were just panning the map)
-    const coordinates = isTheCurrentPolygon
-      ? feature.geometry.coordinates[0].slice(0, -2)
-      : feature.geometry.coordinates;
+    let coordinates;
+
+    if (isTheCurrentFeature && currentFeature.type === Constants.geojsonTypes.POLYGON) {
+      // For the current polygon, the last two points are the mouse position and back home
+      // so we chop those off (else we get guides showing where the user clicked, even
+      // if they were just panning the map)
+      coordinates = feature.geometry.coordinates[0].slice(0, -2);
+    } else {
+      coordinates = feature.geometry.coordinates;
+    }
 
     getCoordinates(coordinates);
   });
@@ -134,6 +140,7 @@ const getNearbyGuides = (guides, point, snapPx) => {
  * @returns {{lng: number, lat: number}}
  */
 export const snap = (state, e) => {
+  // TODO (davidg): 'snapAndDrawGuides'
   let lng = e.lngLat.lng;
   let lat = e.lngLat.lat;
 

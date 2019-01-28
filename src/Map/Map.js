@@ -1,8 +1,9 @@
 import React from 'react';
 import mapboxGl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import SnapMode from './SnapMode';
-import RectangleMode from './RectangleMode';
+import SnapPolygonMode from './snapModes/SnapPolygonMode';
+import SnapPointMode from './snapModes/SnapPointMode';
+import SnapLineMode from './snapModes/SnapLineMode';
 import customDrawStyles from './customDrawStyles';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
@@ -22,8 +23,9 @@ class Map extends React.PureComponent {
     this.draw = new MapboxDraw({
       modes: {
         ...MapboxDraw.modes,
-        snap: SnapMode,
-        rectangle: RectangleMode,
+        snap_point: SnapPointMode,
+        snap_polygon: SnapPolygonMode,
+        snap_line: SnapLineMode,
       },
       styles: customDrawStyles,
       userProperties: true,
