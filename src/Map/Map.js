@@ -15,9 +15,10 @@ class Map extends React.PureComponent {
     this.map = new mapboxGl.Map({
       container: 'mapbox-snap-map',
       style: 'mapbox://styles/mapbox/streets-v9',
-      center: [151.077, -33.825],
-      zoom: 15,
+      center: [-73.979582, 40.764116],
+      zoom: 14.5,
       bearing: this.props.rotation,
+      hash: true,
     });
 
     this.draw = new MapboxDraw({

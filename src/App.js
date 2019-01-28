@@ -46,7 +46,7 @@ const styles = () => ({
 
 const getRotation = () => {
   const rotation = window.localStorage.rotation;
-  return rotation ? Number(rotation) : 0;
+  return rotation ? Number(rotation) : 29.1; // New York
 };
 
 const setRotation = rotation => {
