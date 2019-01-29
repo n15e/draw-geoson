@@ -4,7 +4,6 @@ import AspectRatioIcon from '@material-ui/icons/AspectRatio';
 import Button from '@material-ui/core/es/Button/Button';
 import Divider from '@material-ui/core/es/Divider/Divider';
 import Drawer from '@material-ui/core/Drawer';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -38,9 +37,7 @@ const styles = () => ({
   },
   map: {
     flex: 1,
-  },
-  buttonIcon: {
-    marginRight: 8,
+    position: 'relative',
   },
 });
 
@@ -49,11 +46,13 @@ class App extends React.PureComponent {
     rotation: 0,
     map: null,
     draw: null,
+    imageFile: null,
+    layers: [],
   };
 
   fileUploadEl = React.createRef();
 
-  handleFile(file) {
+  handleGeoJson(file) {
     try {
       const fileReader = new FileReader();
 
@@ -78,13 +77,27 @@ class App extends React.PureComponent {
             this.state.map.setCenter(firstFeature.geometry.coordinates[0][0]);
           }
           // TODO (davidg): get bbox and zoom, or whatever
+          // TODO (davidg): set rotate based on dominant angle
         } catch (err) {
           console.error(err);
         }
       };
       fileReader.readAsText(file);
-    } catch(err) {
+    } catch (err) {
       console.error(err);
+    }
+  }
+
+  handleFile(file) {
+    if (!file) return;
+
+    if (file.type.startsWith('image/')) {
+      // this.handleImage(file);
+      this.setState({imageFile: file});
+    } else if (file.name.endsWith('json')) {
+      this.handleGeoJson(file);
+    } else {
+      window.alert(`${file.name} doesn't have a supported file type.`);
     }
   }
 
@@ -93,8 +106,21 @@ class App extends React.PureComponent {
 
     return (
       <div className={classes.app}>
+        <Map
+          className={classes.map}
+          rotation={this.state.rotation}
+          onMapReady={({ draw, map, rotation }) => {
+            this.setState({ draw, map, rotation });
+          }}
+          onRotationChange={rotation => {
+            this.setState({ rotation });
+          }}
+          imageFile={this.state.imageFile}
+        />
+
         <Drawer
           variant="permanent"
+          anchor="right"
           classes={{
             root: classes.drawer,
             paper: classes.drawerPaper,
@@ -212,15 +238,13 @@ class App extends React.PureComponent {
                       this.fileUploadEl.current.click();
                     }}
                   >
-                    <InsertDriveFileIcon className={classes.buttonIcon} />
-
-                    Load from file
+                    Load image or geojson
                   </Button>
 
                   {/* hidden input for file upload */}
                   <input
                     type="file"
-                    accept=".json,.geojson"
+                    accept=".json,.geojson,image/*"
                     ref={this.fileUploadEl}
                     hidden
                     onChange={(e) => {
@@ -233,17 +257,6 @@ class App extends React.PureComponent {
             )}
           </List>
         </Drawer>
-
-        <Map
-          className={classes.map}
-          rotation={this.state.rotation}
-          onMapReady={({ draw, map, rotation }) => {
-            this.setState({ draw, map, rotation });
-          }}
-          onRotationChange={rotation => {
-            this.setState({ rotation });
-          }}
-        />
       </div>
     );
   }

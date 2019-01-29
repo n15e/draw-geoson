@@ -18,7 +18,7 @@ export const ACCURACY = {
   '1 mm': 8,
 };
 
-const round = (num, decimals) => Math.round(num * 10 ** decimals) / 10 ** decimals;
+export const round = (num, decimals) => Math.round(num * 10 ** decimals) / 10 ** decimals;
 
 export const roundLngLatTo1Cm = num => round(num, ACCURACY['1 cm']);
 
