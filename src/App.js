@@ -9,6 +9,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PlaceIcon from '@material-ui/icons/Place';
+import ImageIcon from '@material-ui/icons/Image';
 import TextField from '@material-ui/core/TextField';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import Map from './Map/Map';
@@ -46,8 +47,8 @@ class App extends React.PureComponent {
     rotation: 0,
     map: null,
     draw: null,
-    imageFile: null,
     layers: [],
+    currentLayerId: null,
   };
 
   fileUploadEl = React.createRef();
@@ -92,8 +93,21 @@ class App extends React.PureComponent {
     if (!file) return;
 
     if (file.type.startsWith('image/')) {
-      // this.handleImage(file);
-      this.setState({imageFile: file});
+      const id = Math.random();
+
+      this.setState(state => ({
+        currentLayerId: id,
+        layers: [
+          ...state.layers,
+          {
+            id,
+            type: 'image',
+            name: file.name,
+            imageFile: file,
+            active: true,
+          }
+        ]
+      }));
     } else if (file.name.endsWith('json')) {
       this.handleGeoJson(file);
     } else {
@@ -115,7 +129,8 @@ class App extends React.PureComponent {
           onRotationChange={rotation => {
             this.setState({ rotation });
           }}
-          imageFile={this.state.imageFile}
+          layers={this.state.layers}
+          currentLayerId={this.state.currentLayerId}
         />
 
         <Drawer
@@ -138,6 +153,36 @@ class App extends React.PureComponent {
 
             {!!this.state.map && (
               <React.Fragment>
+                <Divider />
+
+                <ListItem>
+                  <ListItemText
+                    primary="Layers"
+                    classes={{
+                      primary: classes.sectionTitle,
+                    }}
+                  />
+                </ListItem>
+
+                {!!this.state.layers.length ? this.state.layers.map(layer => (
+                  <ListItem
+                    key={layer.id}
+                    button
+                    onClick={() => {
+                      console.log('activating layer:', layer);
+                      this.setState({
+                        currentLayerId: layer.id,
+                      })
+                    }}
+                  >
+                    <ListItemIcon>
+                      {layer.type === 'image' ? <ImageIcon /> : null}
+                    </ListItemIcon>
+
+                    <ListItemText primary={layer.name} />
+                  </ListItem>
+                )) : <ListItem />}
+
                 <Divider />
 
                 <ListItem>

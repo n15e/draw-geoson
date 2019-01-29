@@ -68,13 +68,14 @@ class Map extends React.PureComponent {
       <div className={this.props.className}>
         <div id="mapbox-snap-map" style={{ height: '100%' }}/>
 
-        {!!this.props.imageFile && (
+        {this.props.layers.map(layer => (
           <ImageLayer
-            imageFile={this.props.imageFile}
+            key={layer.id}
+            {...layer}
+            active={layer.id === this.props.currentLayerId}
             map={this.map}
-            active
           />
-        )}
+        ))}
       </div>
     );
   }
