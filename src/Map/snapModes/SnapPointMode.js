@@ -5,6 +5,7 @@ import {
   findGuidesFromFeatures,
   getGuideFeature,
   IDS,
+  makeFeature,
   roundLngLatTo1Cm,
   shouldHideGuide,
   snap,
@@ -12,15 +13,18 @@ import {
 
 const SnapPointMode = {...DrawPoint};
 
-SnapPointMode.onSetup = function({ snapPx = 10, draw }) {
-  const point = this.newFeature({
-    type: Constants.geojsonTypes.FEATURE,
-    properties: {},
-    geometry: {
-      type: Constants.geojsonTypes.POINT,
-      coordinates: [[]],
+SnapPointMode.onSetup = function({
+  draw,
+  featureType,
+  category,
+}) {
+  const point = this.newFeature(makeFeature({
+    type: Constants.geojsonTypes.POINT,
+    properties: {
+      category,
+      featureType,
     },
-  });
+  }));
 
   const verticalGuide = this.newFeature(getGuideFeature(IDS.VERTICAL_GUIDE));
   const horizontalGuide = this.newFeature(getGuideFeature(IDS.HORIZONTAL_GUIDE));
@@ -38,7 +42,7 @@ SnapPointMode.onSetup = function({ snapPx = 10, draw }) {
     horizontalGuide,
     map: this.map,
     point,
-    snapPx,
+    snapPx: 10,
     verticalGuide,
   };
 

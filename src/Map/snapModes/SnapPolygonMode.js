@@ -6,6 +6,7 @@ import {
   findGuidesFromFeatures,
   getGuideFeature,
   IDS,
+  makeFeature,
   roundLngLatTo1Cm,
   shouldHideGuide,
   snap,
@@ -13,15 +14,18 @@ import {
 
 const SnapPolygonMode = {...DrawPolygon};
 
-SnapPolygonMode.onSetup = function({ snapPx = 10, draw }) {
-  const polygon = this.newFeature({
-    type: Constants.geojsonTypes.FEATURE,
-    properties: {},
-    geometry: {
-      type: Constants.geojsonTypes.POLYGON,
-      coordinates: [[]],
+SnapPolygonMode.onSetup = function({
+  draw,
+  featureType,
+  category,
+}) {
+  const polygon = this.newFeature(makeFeature({
+    type: Constants.geojsonTypes.POLYGON,
+    properties: {
+      category,
+      featureType,
     },
-  });
+  }));
 
   const verticalGuide = this.newFeature(getGuideFeature(IDS.VERTICAL_GUIDE));
   const horizontalGuide = this.newFeature(getGuideFeature(IDS.HORIZONTAL_GUIDE));
@@ -40,7 +44,7 @@ SnapPolygonMode.onSetup = function({ snapPx = 10, draw }) {
     horizontalGuide,
     map: this.map,
     polygon,
-    snapPx,
+    snapPx: 10,
     verticalGuide,
   };
 
@@ -62,7 +66,7 @@ SnapPolygonMode.onClick = function(state) {
     const lastVertex = state.polygon.coordinates[0][state.currentVertexPosition - 1];
 
     if (lastVertex[0] === lng && lastVertex[1] === lat) {
-      return this.changeMode(Constants.modes.SIMPLE_SELECT, { featureIds: [state.polygon.id] });
+      return this.changeMode(Constants.modes.SIMPLE_SELECT);
     }
   }
 

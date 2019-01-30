@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './ImageLayer.module.css';
 import { round } from '../snapModes/snapUtils';
+import styles from './ImageLayer.module.css';
 
 const getImageDimensions = async imageFile => {
   const objectUrl = URL.createObjectURL(imageFile);
@@ -24,9 +24,9 @@ const getImageDimensions = async imageFile => {
 class ImageLayer extends React.PureComponent {
   state = {
     ready: false,
+    dragInProgress: false,
   };
 
-  dragInProgress = false;
   // TODO (davidg): unique source/layer name (not file.name)
   imageSourceId = 'image-source';
   rotationOnInsertion = 0;
@@ -84,7 +84,7 @@ class ImageLayer extends React.PureComponent {
 
   handleMouseMove = e => {
     // ignore mousemove events after mouseup
-    if (!this.dragInProgress) return;
+    if (!this.state.dragInProgress) return;
 
     if (this.currentHandle === 'move') {
       const deltaX = e.clientX - this.startX - this.cursorOffsetX;
@@ -152,7 +152,7 @@ class ImageLayer extends React.PureComponent {
   };
 
   handleMouseUp = () => {
-    this.dragInProgress = false;
+    this.setState({dragInProgress: false});
     this.currentHandle = null;
 
     this.updateLayersFromState();
@@ -161,9 +161,8 @@ class ImageLayer extends React.PureComponent {
   };
 
   handleMouseDown = (e, handle) => {
-    this.dragInProgress = true;
+    this.setState({dragInProgress: true});
 
-    // TODO (davidg): set mouse cursor - (not so easy!)
     this.currentHandle = handle;
     this.cursorOffsetX = e.clientX - this.state.left;
     this.cursorOffsetY = e.clientY - this.state.top;
@@ -184,7 +183,7 @@ class ImageLayer extends React.PureComponent {
 
     const fileData = await getImageDimensions(this.props.imageFile);
 
-    this.imageRatio = fileData.height / fileData.width; // > 1 = portrait
+    this.imageRatio = fileData.height / fileData.width;
 
     // Scale image to take up 80% width
     // Doesn't really matter if it ends up being taller than the page height
@@ -206,6 +205,13 @@ class ImageLayer extends React.PureComponent {
 
     const coordinates = this.getLngLatCoordinatesFromPoints();
 
+    // We want to insert our image layer below the mapbox-gl-draw layers
+    const firstGlDrawLayer = map.getStyle().layers
+      .find(
+        layer => layer.source && layer.source.startsWith('mapbox-gl-draw')
+      );
+    const insertBefore = firstGlDrawLayer ? firstGlDrawLayer.id : undefined;
+
     map.addSource(this.imageSourceId, {
       type: 'image',
       url: fileData.objectUrl,
@@ -217,21 +223,28 @@ class ImageLayer extends React.PureComponent {
       type: 'raster',
       source: this.imageSourceId,
       paint: {
-        'raster-opacity': 0.8,
+        'raster-opacity': 0.5,
       },
-    });
+    }, insertBefore);
 
     map.on('move', () => {
       // Update the UI when the map moves
-      if (this.props.active) {
+      if (!this.props.locked) {
         this.setPointsFromLatLngCoordinates();
         this.setState({currentRotation: round(map.getBearing(), 1)});
       }
     });
   };
 
+  componentDidUpdate(prevProps) {
+    if (this.props.locked !== prevProps.locked) {
+      this.setPointsFromLatLngCoordinates();
+    }
+  }
+
   render() {
-    if (!this.state.ready || !this.props.active) return null;
+    if (this.props.locked) return null;
+    if (!this.state.ready) return null;
     if (this.rotationOnInsertion !== this.state.currentRotation) return null;
 
     return (
@@ -254,6 +267,7 @@ class ImageLayer extends React.PureComponent {
             left: this.state.left,
             top: this.state.top,
             cursor: 'nw-resize',
+            opacity: this.state.dragInProgress ? 0.1 : 1,
           }}
           onMouseDown={e => {
             this.handleMouseDown(e, 'nw');
@@ -265,6 +279,7 @@ class ImageLayer extends React.PureComponent {
             left: this.state.left + this.state.width,
             top: this.state.top,
             cursor: 'ne-resize',
+            opacity: this.state.dragInProgress ? 0.1 : 1,
           }}
           onMouseDown={e => {
             this.handleMouseDown(e, 'ne');
@@ -276,6 +291,7 @@ class ImageLayer extends React.PureComponent {
             left: this.state.left + this.state.width,
             top: this.state.top + this.state.height,
             cursor: 'se-resize',
+            opacity: this.state.dragInProgress ? 0.1 : 1,
           }}
           onMouseDown={e => {
             this.handleMouseDown(e, 'se');
@@ -287,6 +303,7 @@ class ImageLayer extends React.PureComponent {
             left: this.state.left,
             top: this.state.top + this.state.height,
             cursor: 'sw-resize',
+            opacity: this.state.dragInProgress ? 0.1 : 1,
           }}
           onMouseDown={e => {
             this.handleMouseDown(e, 'sw');

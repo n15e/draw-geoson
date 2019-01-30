@@ -6,6 +6,7 @@ import {
   findGuidesFromFeatures,
   getGuideFeature,
   IDS,
+  makeFeature,
   roundLngLatTo1Cm,
   shouldHideGuide,
   snap,
@@ -13,15 +14,18 @@ import {
 
 const SnapLineMode = {...DrawLine};
 
-SnapLineMode.onSetup = function({ snapPx = 10, draw }) {
-  const line = this.newFeature({
-    type: Constants.geojsonTypes.FEATURE,
-    properties: {},
-    geometry: {
-      type: Constants.geojsonTypes.LINE_STRING,
-      coordinates: [[]],
+SnapLineMode.onSetup = function({
+  draw,
+  featureType,
+  category,
+}) {
+  const line = this.newFeature(makeFeature({
+    type: Constants.geojsonTypes.LINE_STRING,
+    properties: {
+      category,
+      featureType,
     },
-  });
+  }));
 
   const verticalGuide = this.newFeature(getGuideFeature(IDS.VERTICAL_GUIDE));
   const horizontalGuide = this.newFeature(getGuideFeature(IDS.HORIZONTAL_GUIDE));
@@ -40,7 +44,7 @@ SnapLineMode.onSetup = function({ snapPx = 10, draw }) {
     horizontalGuide,
     map: this.map,
     line,
-    snapPx,
+    snapPx: 10,
     verticalGuide,
     direction: 'forward', // expected by DrawLineString
   };
@@ -64,7 +68,7 @@ SnapLineMode.onClick = function(state) {
     const lastVertex = state.line.coordinates[state.currentVertexPosition - 1];
 
     if (lastVertex[0] === lng && lastVertex[1] === lat) {
-      return this.changeMode(Constants.modes.SIMPLE_SELECT, { featureIds: [state.line.id] });
+      return this.changeMode(Constants.modes.SIMPLE_SELECT);
     }
   }
 

@@ -13,7 +13,13 @@ import { round } from './snapModes/snapUtils';
 mapboxGl.accessToken = 'pk.eyJ1IjoiZGF2aWRnNzA3IiwiYSI6ImNqZWVxaGtnazF2czAyeXFlcDlvY2kwZDQifQ.WSmiQO0ccl85_FvEDTsBmw';
 
 class Map extends React.PureComponent {
-  renderMap() {
+  componentDidUpdate(prevProps) {
+    if (this.props.rotation !== prevProps.rotation) {
+      this.map.setBearing(this.props.rotation)
+    }
+  }
+
+  componentDidMount() {
     this.map = new mapboxGl.Map({
       container: 'mapbox-snap-map',
       style: 'mapbox://styles/mapbox/streets-v9',
@@ -36,6 +42,8 @@ class Map extends React.PureComponent {
 
     this.map.addControl(this.draw, 'bottom-left');
 
+    window.map = this.map;
+
     this.map.on('load', () => {
       this.props.onMapReady({
         map: this.map,
@@ -51,16 +59,14 @@ class Map extends React.PureComponent {
         this.props.onRotationChange(Math.round(bearing * 1000) / 1000);
       }
     });
-  }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.rotation !== prevProps.rotation) {
-      this.map.setBearing(this.props.rotation)
-    }
-  }
-
-  componentDidMount() {
-    this.renderMap();
+    this.map.on('draw.selectionchange', ({features}) => {
+      if (features.length !== 1) {
+        this.props.setCurrentFeature(null);
+      } else {
+        this.props.setCurrentFeature(features[0].id);
+      }
+    })
   }
 
   render() {
@@ -68,14 +74,12 @@ class Map extends React.PureComponent {
       <div className={this.props.className}>
         <div id="mapbox-snap-map" style={{ height: '100%' }}/>
 
-        {this.props.layers.map(layer => (
+        {!!this.props.imageLayer && (
           <ImageLayer
-            key={layer.id}
-            {...layer}
-            active={layer.id === this.props.currentLayerId}
+            {...this.props.imageLayer}
             map={this.map}
           />
-        ))}
+        )}
       </div>
     );
   }

@@ -1,3 +1,4 @@
+import uuid from 'uuid/v4';
 import Constants from '@mapbox/mapbox-gl-draw/src/constants';
 
 export const IDS = {
@@ -21,6 +22,19 @@ export const ACCURACY = {
 export const round = (num, decimals) => Math.round(num * 10 ** decimals) / 10 ** decimals;
 
 export const roundLngLatTo1Cm = num => round(num, ACCURACY['1 cm']);
+
+export const makeFeature = ({type, properties = {}}) => ({
+  id: uuid(),
+  type: Constants.geojsonTypes.FEATURE,
+  properties: {
+    ...properties,
+    pam: 'true',
+  },
+  geometry: {
+    type,
+    coordinates: [[]],
+  },
+});
 
 /**
  * Takes a point and maybe adds it to the list of guides.

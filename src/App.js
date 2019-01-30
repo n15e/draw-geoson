@@ -6,16 +6,24 @@ import Divider from '@material-ui/core/es/Divider/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import TextField from '@material-ui/core/TextField';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import TimelineIcon from '@material-ui/icons/Timeline';
 import PlaceIcon from '@material-ui/icons/Place';
 import ImageIcon from '@material-ui/icons/Image';
-import TextField from '@material-ui/core/TextField';
-import TimelineIcon from '@material-ui/icons/Timeline';
+import SaveIcon from '@material-ui/icons/Save';
+import LockIcon from '@material-ui/icons/Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 import Map from './Map/Map';
 import './App.css';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemSecondaryAction
+  from '@material-ui/core/ListItemSecondaryAction';
+import Properties from './Properties/Properties';
+import { FEATURE_TYPES } from './imdfSpec';
 
-const drawerWidth = 280;
+const drawerWidth = 420;
 
 const styles = () => ({
   app: {
@@ -47,8 +55,8 @@ class App extends React.PureComponent {
     rotation: 0,
     map: null,
     draw: null,
-    layers: [],
-    currentLayerId: null,
+    imageLayer: null,
+    currentFeatureId: null,
   };
 
   fileUploadEl = React.createRef();
@@ -93,27 +101,37 @@ class App extends React.PureComponent {
     if (!file) return;
 
     if (file.type.startsWith('image/')) {
-      const id = Math.random();
-
-      this.setState(state => ({
-        currentLayerId: id,
-        layers: [
-          ...state.layers,
-          {
-            id,
-            type: 'image',
-            name: file.name,
-            imageFile: file,
-            active: true,
-          }
-        ]
-      }));
+      this.setState({
+        imageLayer: {
+          name: file.name,
+          imageFile: file,
+          locked: false,
+        }
+      });
     } else if (file.name.endsWith('json')) {
       this.handleGeoJson(file);
     } else {
       window.alert(`${file.name} doesn't have a supported file type.`);
     }
   }
+
+  toggleImageLayerLock = () => {
+    this.setState(state => ({
+      imageLayer: {
+        ...state.imageLayer,
+        locked: !state.imageLayer.locked,
+      },
+    }));
+  };
+
+  saveGeoJson = () => {
+    const features = this.state.draw.getAll();
+    const file = new Blob([JSON.stringify(features, null, 2)], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file);
+    a.download = 'my.geojson';
+    a.click();
+  };
 
   render() {
     const { classes } = this.props;
@@ -129,8 +147,10 @@ class App extends React.PureComponent {
           onRotationChange={rotation => {
             this.setState({ rotation });
           }}
-          layers={this.state.layers}
-          currentLayerId={this.state.currentLayerId}
+          imageLayer={this.state.imageLayer}
+          setCurrentFeature={currentFeatureId => {
+            this.setState({currentFeatureId});
+          }}
         />
 
         <Drawer
@@ -144,17 +164,17 @@ class App extends React.PureComponent {
           <List>
             <ListItem>
               <ListItemText
-                primary="Draw GeoJson"
+                primary="Floorplan studio"
                 classes={{
                   primary: classes.siteTitle,
                 }}
               />
             </ListItem>
 
+            <Divider />
+
             {!!this.state.map && (
               <React.Fragment>
-                <Divider />
-
                 <ListItem>
                   <ListItemText
                     primary="Layers"
@@ -164,30 +184,41 @@ class App extends React.PureComponent {
                   />
                 </ListItem>
 
-                {!!this.state.layers.length ? this.state.layers.map(layer => (
-                  <ListItem
-                    key={layer.id}
-                    button
-                    onClick={() => {
-                      console.log('activating layer:', layer);
-                      this.setState({
-                        currentLayerId: layer.id,
-                      })
-                    }}
-                  >
+                {!!this.state.imageLayer && (
+                  <ListItem>
                     <ListItemIcon>
-                      {layer.type === 'image' ? <ImageIcon /> : null}
+                      <ImageIcon />
                     </ListItemIcon>
 
-                    <ListItemText primary={layer.name} />
+                    <ListItemText primary={this.state.imageLayer.name} />
+
+                    <ListItemSecondaryAction>
+                      <IconButton onClick={this.toggleImageLayerLock}>
+                        {this.state.imageLayer.locked ? <LockIcon /> : <LockOpenIcon />}
+                      </IconButton>
+                    </ListItemSecondaryAction>
                   </ListItem>
-                )) : <ListItem />}
+                )}
+
+                <ListItem>
+                  <ListItemIcon>
+                    <TimelineIcon />
+                  </ListItemIcon>
+
+                  <ListItemText primary="GeoJson" />
+
+                  <ListItemSecondaryAction>
+                    <IconButton onClick={this.saveGeoJson}>
+                      <SaveIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
 
                 <Divider />
 
                 <ListItem>
                   <ListItemText
-                    primary="Tools"
+                    primary="Add features"
                     classes={{
                       primary: classes.sectionTitle,
                     }}
@@ -199,6 +230,7 @@ class App extends React.PureComponent {
                   onClick={() => {
                     this.state.draw.changeMode('snap_point', {
                       draw: this.state.draw,
+                      featureType: FEATURE_TYPES.anchor.code,
                     });
                   }}
                 >
@@ -206,7 +238,7 @@ class App extends React.PureComponent {
                     <PlaceIcon />
                   </ListItemIcon>
 
-                  <ListItemText primary="Snappy point" />
+                  <ListItemText primary={FEATURE_TYPES.anchor.name} />
                 </ListItem>
 
                 <ListItem
@@ -214,6 +246,7 @@ class App extends React.PureComponent {
                   onClick={() => {
                     this.state.draw.changeMode('snap_line', {
                       draw: this.state.draw,
+                      featureType: FEATURE_TYPES.opening.code,
                     });
                   }}
                 >
@@ -221,7 +254,7 @@ class App extends React.PureComponent {
                     <TimelineIcon />
                   </ListItemIcon>
 
-                  <ListItemText primary="Snappy line" />
+                  <ListItemText primary={FEATURE_TYPES.opening.name} />
                 </ListItem>
 
                 <ListItem
@@ -229,6 +262,7 @@ class App extends React.PureComponent {
                   onClick={() => {
                     this.state.draw.changeMode('snap_polygon', {
                       draw: this.state.draw,
+                      featureType: FEATURE_TYPES.kiosk.code,
                     });
                   }}
                 >
@@ -236,14 +270,83 @@ class App extends React.PureComponent {
                     <AspectRatioIcon />
                   </ListItemIcon>
 
-                  <ListItemText primary="Snappy polygon" />
+                  <ListItemText primary={FEATURE_TYPES.kiosk.name} />
+                </ListItem>
+
+                <ListItem
+                  button
+                  onClick={() => {
+                    this.state.draw.changeMode('snap_polygon', {
+                      draw: this.state.draw,
+                      featureType: FEATURE_TYPES.unit.code,
+                      category: FEATURE_TYPES.unit.categories.room.code,
+                    });
+                  }}
+                >
+                  <ListItemIcon>
+                    <AspectRatioIcon />
+                  </ListItemIcon>
+
+                  <ListItemText primary={FEATURE_TYPES.unit.categories.room.name} />
+                </ListItem>
+
+                <ListItem
+                  button
+                  onClick={() => {
+                    this.state.draw.changeMode('snap_polygon', {
+                      draw: this.state.draw,
+                      featureType: FEATURE_TYPES.unit.code,
+                      category: FEATURE_TYPES.unit.categories.restroom.code,
+                    });
+                  }}
+                >
+                  <ListItemIcon>
+                    <AspectRatioIcon />
+                  </ListItemIcon>
+
+                  <ListItemText primary={FEATURE_TYPES.unit.categories.restroom.name} />
+                </ListItem>
+
+                <ListItem
+                  button
+                  onClick={() => {
+                    this.state.draw.changeMode('snap_polygon', {
+                      draw: this.state.draw,
+                      featureType: FEATURE_TYPES.footprint.code,
+                      category: FEATURE_TYPES.footprint.categories.ground.code,
+                    });
+                  }}
+                >
+                  <ListItemIcon>
+                    <AspectRatioIcon />
+                  </ListItemIcon>
+
+                  <ListItemText primary={FEATURE_TYPES.footprint.name} />
                 </ListItem>
 
                 <Divider />
 
+                {!!this.state.currentFeatureId && (
+                  <React.Fragment>
+                    <ListItem>
+                      <ListItemText
+                        primary="Properties"
+                        classes={{
+                          primary: classes.sectionTitle,
+                        }}
+                      />
+                    </ListItem>
+
+                    <Properties
+                      featureId={this.state.currentFeatureId}
+                      draw={this.state.draw}
+                    />
+                  </React.Fragment>
+                )}
+
                 <ListItem>
                   <ListItemText
-                    primary="Controls"
+                    primary="Other stuff"
                     classes={{
                       primary: classes.sectionTitle,
                     }}
@@ -260,17 +363,6 @@ class App extends React.PureComponent {
                     onChange={e => {
                       const rotation = Number(e.target.value || 0);
                       this.setState({rotation});
-                    }}
-                  />
-                </ListItem>
-
-                <Divider />
-
-                <ListItem>
-                  <ListItemText
-                    primary="Import/export"
-                    classes={{
-                      primary: classes.sectionTitle,
                     }}
                   />
                 </ListItem>
