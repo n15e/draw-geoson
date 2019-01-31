@@ -50,7 +50,7 @@ const PropertyRow = props => {
 
                 {showSelect && (
                     <Select
-                        value={props.value}
+                        value={props.value || ''}
                         onChange={e => {
                             props.onChange(props.propertyName, e.target.value);
                         }}
@@ -80,8 +80,8 @@ PropertyRow.propTypes = {
         })
     ),
     name: PropTypes.string.isRequired,
-    propertyName: PropTypes.string.isRequired,
-    value: PropTypes.any.isRequired,
+    propertyName: PropTypes.string,
+    value: PropTypes.any,
     onChange: PropTypes.func,
     editable: PropTypes.bool,
 };

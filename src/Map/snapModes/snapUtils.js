@@ -83,7 +83,7 @@ export const addPointToGuides = (guides, point, forceInclusion) => {
  * @returns {{vertical: Array, horizontal: Array}}
  */
 export const findGuidesFromFeatures = (map, draw, currentFeature) => {
-    const features = draw.getAll().features;
+    const features = draw.getAll().features.filter(feature => feature.properties.pam === 'true');
 
     const guides = {
         vertical: [],
@@ -97,6 +97,7 @@ export const findGuidesFromFeatures = (map, draw, currentFeature) => {
         // guides or the last leg of a polygon
         if (feature.id === IDS.HORIZONTAL_GUIDE || feature.id === IDS.VERTICAL_GUIDE) return;
 
+        // TODO (davidg): just use turf.coordAll?
         const getCoordinates = array => {
             if (!Array.isArray(array)) throw Error('Your array is not an array');
 

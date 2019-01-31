@@ -11,7 +11,7 @@ export const FEATURE_TYPES = {
             'restroom.male': {name: 'Restroom - male', code: 'restroom.male'},
             room: {name: 'Room', code: 'room'},
         },
-        properties: [],
+        properties: ['restriction', 'name'],
     },
     venue: {
         name: 'Venue',
@@ -45,6 +45,10 @@ export const FEATURE_TYPES = {
         name: 'Anchor',
         code: 'anchor',
         categories: null,
+        // TODO (davidg): some of these will be drop downs (e.g. unit_id)
+        //  and some will be just text, or different types. So trying to do it
+        //  all here is probably not going to work very well.
+        //  Instead I can just do <AnchorProperties> and <FootprintProperties> or whatever
         properties: ['address_id', 'unit_id', 'pam_space_id'],
     },
 };

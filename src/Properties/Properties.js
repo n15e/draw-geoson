@@ -65,7 +65,17 @@ class Properties extends Component {
         const {feature} = this.state;
         const {classes} = this.props;
 
-        const featureType = FEATURE_TYPES[feature.properties.featureType];
+        const featureTypeDefinition = FEATURE_TYPES[feature.properties.featureType];
+
+        // if (feature.properties.featureType === 'anchor') {
+        //     const allFeatures = draw.getAll();
+        //     const unitIds = allFeatures.features
+        //         .filter(item => item.properties.featureType === 'unit')
+        //         .map(unit => ({
+        //             code: unit.id,
+        //             name: unit.properties.name || unit.id,
+        //         }));
+        // }
 
         return (
             <ListItem className={classes.listItem}>
@@ -81,19 +91,43 @@ class Properties extends Component {
 
                         <PropertyRow name="ID" value={feature.id} />
 
-                        <PropertyRow name="Type" value={featureType.name} />
+                        <PropertyRow name="Type" value={featureTypeDefinition.name} />
 
-                        {!!featureType.categories && (
+                        {feature.geometry.type === 'Point' && (
+                            <React.Fragment>
+                                <PropertyRow
+                                    name="Latitude"
+                                    value={feature.geometry.coordinates[1]}
+                                />
+                                <PropertyRow
+                                    name="Longitude"
+                                    value={feature.geometry.coordinates[0]}
+                                />
+                            </React.Fragment>
+                        )}
+
+                        {/* {feature.properties.featureType === 'anchor' && ( */}
+                        {/* <PropertyRow */}
+                        {/* name="Linked unit" */}
+                        {/* propertyName="unit_id" */}
+                        {/* value={feature.properties.unit_id} */}
+                        {/* options={getUnitIds()} */}
+                        {/* onChange={this.updateProperty} */}
+                        {/* /> */}
+                        {/* )} */}
+
+                        {!!featureTypeDefinition.categories && (
                             <PropertyRow
                                 name="Category"
                                 propertyName="category"
                                 value={feature.properties.category}
-                                options={Object.values(featureType.categories)}
+                                options={Object.values(featureTypeDefinition.categories)}
                                 onChange={this.updateProperty}
                             />
                         )}
-                        {!!featureType.properties &&
-                            featureType.properties.map(propertyName => (
+
+                        {!!featureTypeDefinition.properties &&
+                            featureTypeDefinition.properties.map(propertyName => (
                                 <PropertyRow
                                     name={propertyName}
                                     key={propertyName}
