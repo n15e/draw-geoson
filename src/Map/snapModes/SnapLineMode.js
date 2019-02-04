@@ -15,14 +15,11 @@ import {
 
 const SnapLineMode = {...DrawLine};
 
-SnapLineMode.onSetup = function({draw, featureType, category}) {
+SnapLineMode.onSetup = function({draw, onAdd = () => {}, properties = {}, snapFilter}) {
     const line = this.newFeature(
         makeFeature({
             type: Constants.geojsonTypes.LINE_STRING,
-            properties: {
-                category,
-                featureType,
-            },
+            properties,
         })
     );
 
@@ -39,18 +36,25 @@ SnapLineMode.onSetup = function({draw, featureType, category}) {
     const state = {
         currentVertexPosition: 0,
         draw,
-        guides: findGuidesFromFeatures(this.map, draw, line),
+        guides: findGuidesFromFeatures({map: this.map, draw, currentFeature: line, snapFilter}),
         horizontalGuide,
         map: this.map,
         line,
+        onAdd,
         snapPx: 10,
         verticalGuide,
         direction: 'forward', // expected by DrawLineString
+        snapFilter,
     };
 
     this.map.on('moveend', () => {
         // Update the guide locations after zoom, pan, rotate, or resize
-        state.guides = findGuidesFromFeatures(this.map, draw, line);
+        state.guides = findGuidesFromFeatures({
+            map: this.map,
+            draw,
+            currentFeature: line,
+            snapFilter,
+        });
     });
 
     return state;
@@ -106,6 +110,7 @@ SnapLineMode.toDisplayFeatures = function(state, geojson, display) {
 SnapLineMode.onStop = function(state) {
     this.deleteFeature(IDS.VERTICAL_GUIDE, {silent: true});
     this.deleteFeature(IDS.HORIZONTAL_GUIDE, {silent: true});
+    state.onAdd(state.line);
 
     // This relies on the the state of SnapLineMode being similar to DrawLine
     DrawLine.onStop.call(this, state);

@@ -51,4 +51,15 @@ export const FEATURE_TYPES = {
         //  Instead I can just do <AnchorProperties> and <FootprintProperties> or whatever
         properties: ['address_id', 'unit_id', 'pam_space_id'],
     },
+    // Routing extensions to IMDF
+    routeSegment: {
+        name: 'Route segment',
+        code: 'routeSegment',
+        categories: null,
+    },
+    routeNode: {
+        name: 'Route node',
+        code: 'routeNode',
+        categories: null,
+    },
 };

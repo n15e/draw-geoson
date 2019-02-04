@@ -22,6 +22,7 @@ export const ACCURACY = {
 
 export const round = (num, decimals) => Math.round(num * 10 ** decimals) / 10 ** decimals;
 
+// TODO (davidg): there's turf.truncate for this
 export const roundLngLatTo1Cm = num => round(num, ACCURACY['1 cm']);
 
 /**
@@ -77,13 +78,19 @@ export const addPointToGuides = (guides, point, forceInclusion) => {
 /**
  * Loops over all features to get vertical and horizontal guides to snap to
  *
- * @param map
- * @param draw
- * @param currentFeature
+ * @param {object} props
+ * @param props.map
+ * @param props.draw
+ * @param props.currentFeature
+ * @param {function} [props.snapFilter]
  * @returns {{vertical: Array, horizontal: Array}}
  */
-export const findGuidesFromFeatures = (map, draw, currentFeature) => {
-    const features = draw.getAll().features.filter(feature => feature.properties.pam === 'true');
+export const findGuidesFromFeatures = ({map, draw, currentFeature, snapFilter}) => {
+    const features = draw.getAll().features.filter(feature => {
+        if (snapFilter) return snapFilter(feature);
+
+        return feature.properties.pam === 'true';
+    });
 
     const guides = {
         vertical: [],

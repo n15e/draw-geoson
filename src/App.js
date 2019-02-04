@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import * as turf from '@turf/turf';
 import {withStyles} from '@material-ui/core';
 import AspectRatioIcon from '@material-ui/icons/AspectRatio';
 import Button from '@material-ui/core/es/Button/Button';
@@ -21,6 +22,8 @@ import TimelineIcon from '@material-ui/icons/Timeline';
 import Map from './Map/Map';
 import Properties from './Properties/Properties';
 import {FEATURE_TYPES} from './imdfSpec';
+import Directions from './Directions/Directions';
+import * as mapUtils from './Map/mapUtils';
 import './App.css';
 
 const drawerWidth = 420;
@@ -57,6 +60,8 @@ class App extends React.PureComponent {
         draw: null,
         imageLayer: null,
         currentFeatureId: null,
+        from: null,
+        to: null,
     };
 
     fileUploadEl = React.createRef();
@@ -74,7 +79,7 @@ class App extends React.PureComponent {
                     type: rawGeojson.type,
                 };
 
-                this.state.draw.add(geojson);
+                mapUtils.getDraw().add(geojson);
 
                 try {
                     const firstFeature = rawGeojson.features[0];
@@ -126,7 +131,8 @@ class App extends React.PureComponent {
     };
 
     saveGeoJson = () => {
-        const features = this.state.draw.getAll();
+        const features = mapUtils.getAllFeatures();
+
         const file = new Blob([JSON.stringify(features, null, 2)], {type: 'text/plain'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(file);
@@ -221,6 +227,19 @@ class App extends React.PureComponent {
 
                                 <Divider />
 
+                                <Directions
+                                    from={this.state.from}
+                                    to={this.state.to}
+                                    onChangeFrom={from => {
+                                        this.setState({from});
+                                    }}
+                                    onChangeTo={to => {
+                                        this.setState({to});
+                                    }}
+                                />
+
+                                <Divider />
+
                                 <ListItem>
                                     <ListItemText
                                         primary="Add features"
@@ -233,9 +252,11 @@ class App extends React.PureComponent {
                                 <ListItem
                                     button
                                     onClick={() => {
-                                        this.state.draw.changeMode('snap_point', {
+                                        mapUtils.changeDrawMode('snap_point', {
                                             draw: this.state.draw,
-                                            featureType: FEATURE_TYPES.anchor.code,
+                                            properties: {
+                                                featureType: FEATURE_TYPES.anchor.code,
+                                            },
                                         });
                                     }}
                                 >
@@ -249,9 +270,14 @@ class App extends React.PureComponent {
                                 <ListItem
                                     button
                                     onClick={() => {
-                                        this.state.draw.changeMode('snap_line', {
+                                        mapUtils.changeDrawMode('snap_line', {
                                             draw: this.state.draw,
-                                            featureType: FEATURE_TYPES.opening.code,
+                                            properties: {
+                                                featureType: FEATURE_TYPES.routeSegment.code,
+                                            },
+                                            snapFilter: feature =>
+                                                feature.properties.featureType ===
+                                                FEATURE_TYPES.routeSegment.code,
                                         });
                                     }}
                                 >
@@ -259,15 +285,29 @@ class App extends React.PureComponent {
                                         <TimelineIcon />
                                     </ListItemIcon>
 
-                                    <ListItemText primary={FEATURE_TYPES.opening.name} />
+                                    <ListItemText primary={FEATURE_TYPES.routeSegment.name} />
                                 </ListItem>
 
                                 <ListItem
                                     button
                                     onClick={() => {
-                                        this.state.draw.changeMode('snap_polygon', {
+                                        mapUtils.changeDrawMode('snap_polygon', {
                                             draw: this.state.draw,
-                                            featureType: FEATURE_TYPES.kiosk.code,
+                                            properties: {
+                                                featureType: FEATURE_TYPES.kiosk.code,
+                                                name: '',
+                                            },
+                                            onAdd: feature => {
+                                                // Kiosks should have a center point, add one here
+                                                const center = turf.center(feature);
+                                                // TODO (davidg): something here fails if you
+                                                //  hit escape when adding a polygon
+                                                mapUtils.setFeatureProperty(
+                                                    feature.id,
+                                                    'display_point',
+                                                    center
+                                                );
+                                            },
                                         });
                                     }}
                                 >
@@ -281,10 +321,13 @@ class App extends React.PureComponent {
                                 <ListItem
                                     button
                                     onClick={() => {
-                                        this.state.draw.changeMode('snap_polygon', {
+                                        mapUtils.changeDrawMode('snap_polygon', {
                                             draw: this.state.draw,
-                                            featureType: FEATURE_TYPES.unit.code,
-                                            category: FEATURE_TYPES.unit.categories.room.code,
+                                            properties: {
+                                                featureType: FEATURE_TYPES.unit.code,
+                                                category: FEATURE_TYPES.unit.categories.room.code,
+                                                name: '',
+                                            },
                                         });
                                     }}
                                 >
@@ -300,10 +343,14 @@ class App extends React.PureComponent {
                                 <ListItem
                                     button
                                     onClick={() => {
-                                        this.state.draw.changeMode('snap_polygon', {
+                                        mapUtils.changeDrawMode('snap_polygon', {
                                             draw: this.state.draw,
-                                            featureType: FEATURE_TYPES.unit.code,
-                                            category: FEATURE_TYPES.unit.categories.restroom.code,
+                                            properties: {
+                                                featureType: FEATURE_TYPES.unit.code,
+                                                category:
+                                                    FEATURE_TYPES.unit.categories.restroom.code,
+                                                name: 'Restroom',
+                                            },
                                         });
                                     }}
                                 >
@@ -319,11 +366,14 @@ class App extends React.PureComponent {
                                 <ListItem
                                     button
                                     onClick={() => {
-                                        this.state.draw.changeMode('snap_polygon', {
+                                        mapUtils.changeDrawMode('snap_polygon', {
                                             draw: this.state.draw,
-                                            featureType: FEATURE_TYPES.footprint.code,
-                                            category:
-                                                FEATURE_TYPES.footprint.categories.ground.code,
+                                            properties: {
+                                                featureType: FEATURE_TYPES.footprint.code,
+                                                category:
+                                                    FEATURE_TYPES.footprint.categories.ground.code,
+                                                name: '',
+                                            },
                                         });
                                     }}
                                 >
@@ -347,10 +397,7 @@ class App extends React.PureComponent {
                                             />
                                         </ListItem>
 
-                                        <Properties
-                                            featureId={this.state.currentFeatureId}
-                                            draw={this.state.draw}
-                                        />
+                                        <Properties featureId={this.state.currentFeatureId} />
                                     </React.Fragment>
                                 )}
 

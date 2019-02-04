@@ -6,6 +6,9 @@ import Table from '@material-ui/core/Table/Table';
 import TableBody from '@material-ui/core/TableBody/TableBody';
 import {FEATURE_TYPES} from '../imdfSpec';
 import PropertyRow from './PropertyRow';
+import destinations from '../data/mockDestinations';
+import * as mapUtils from '../Map/mapUtils';
+// import KioskProperties from './KioskProperties';
 
 const styles = {
     listItem: {
@@ -40,13 +43,17 @@ class Properties extends Component {
     };
 
     setFeatureFromId() {
-        const feature = this.props.draw.get(this.props.featureId);
-        this.setState({feature});
+        this.setState({
+            feature: mapUtils.getFeature(this.props.featureId),
+        });
     }
 
     updateProperty = (property, value) => {
-        this.props.draw.setFeatureProperty(this.props.featureId, property, value);
+        mapUtils.setFeatureProperty(this.props.featureId, property, value);
         this.setFeatureFromId();
+
+        // this.props.onPropertyChange();
+        mapUtils.updateLabels();
     };
 
     componentDidMount() {
@@ -60,22 +67,13 @@ class Properties extends Component {
     }
 
     render() {
-        if (!this.state.feature) return null;
-
         const {feature} = this.state;
         const {classes} = this.props;
 
-        const featureTypeDefinition = FEATURE_TYPES[feature.properties.featureType];
+        // User can click on things that don't have a featureType
+        if (!feature || !feature.properties.featureType) return null;
 
-        // if (feature.properties.featureType === 'anchor') {
-        //     const allFeatures = draw.getAll();
-        //     const unitIds = allFeatures.features
-        //         .filter(item => item.properties.featureType === 'unit')
-        //         .map(unit => ({
-        //             code: unit.id,
-        //             name: unit.properties.name || unit.id,
-        //         }));
-        // }
+        const featureTypeDefinition = FEATURE_TYPES[feature.properties.featureType];
 
         return (
             <ListItem className={classes.listItem}>
@@ -89,9 +87,52 @@ class Properties extends Component {
                             onChange={this.updateProperty}
                         />
 
+                        <PropertyRow
+                            name="Importance"
+                            propertyName="weight"
+                            value={feature.properties.weight || 0}
+                            editable
+                            onChange={(property, value) => {
+                                const num = Number(value);
+
+                                if (!Number.isNaN(num)) {
+                                    this.updateProperty(property, value);
+                                } else {
+                                    this.updateProperty(property, 0);
+                                }
+                            }}
+                        />
+
                         <PropertyRow name="ID" value={feature.id} />
 
                         <PropertyRow name="Type" value={featureTypeDefinition.name} />
+                        <PropertyRow
+                            name="display_point"
+                            value={JSON.stringify(feature.properties.display_point)}
+                        />
+
+                        {feature.properties.featureType === 'kiosk' && (
+                            <PropertyRow
+                                name="Destination"
+                                propertyName="destination"
+                                value={feature.properties.destinationId || ''}
+                                options={destinations.map(destination => ({
+                                    code: destination.id,
+                                    name: destination.name,
+                                }))}
+                                onChange={(property, value) => {
+                                    const selectedDestination = destinations.find(
+                                        destination => destination.id === value
+                                    );
+
+                                    this.updateProperty('destinationId', selectedDestination.id);
+                                    this.updateProperty(
+                                        'destinationName',
+                                        selectedDestination.name
+                                    );
+                                }}
+                            />
+                        )}
 
                         {feature.geometry.type === 'Point' && (
                             <React.Fragment>
@@ -105,16 +146,6 @@ class Properties extends Component {
                                 />
                             </React.Fragment>
                         )}
-
-                        {/* {feature.properties.featureType === 'anchor' && ( */}
-                        {/* <PropertyRow */}
-                        {/* name="Linked unit" */}
-                        {/* propertyName="unit_id" */}
-                        {/* value={feature.properties.unit_id} */}
-                        {/* options={getUnitIds()} */}
-                        {/* onChange={this.updateProperty} */}
-                        {/* /> */}
-                        {/* )} */}
 
                         {!!featureTypeDefinition.categories && (
                             <PropertyRow
@@ -146,8 +177,8 @@ class Properties extends Component {
 
 Properties.propTypes = {
     featureId: PropTypes.string.isRequired,
-    draw: PropTypes.any,
     classes: PropTypes.object,
+    onPropertyChange: PropTypes.func,
 };
 
 export default withStyles(styles)(Properties);

@@ -14,14 +14,11 @@ import {
 
 const SnapPointMode = {...DrawPoint};
 
-SnapPointMode.onSetup = function({draw, featureType, category}) {
+SnapPointMode.onSetup = function({draw, properties = {}}) {
     const point = this.newFeature(
         makeFeature({
             type: Constants.geojsonTypes.POINT,
-            properties: {
-                category,
-                featureType,
-            },
+            properties,
         })
     );
 
@@ -37,7 +34,7 @@ SnapPointMode.onSetup = function({draw, featureType, category}) {
     // A dog's breakfast
     const state = {
         draw,
-        guides: findGuidesFromFeatures(this.map, draw, point),
+        guides: findGuidesFromFeatures({map: this.map, draw, currentFeature: point}),
         horizontalGuide,
         map: this.map,
         point,
@@ -47,7 +44,7 @@ SnapPointMode.onSetup = function({draw, featureType, category}) {
 
     this.map.on('moveend', () => {
         // Update the guide locations after zoom, pan, rotate, or resize
-        state.guides = findGuidesFromFeatures(this.map, draw, point);
+        state.guides = findGuidesFromFeatures({map: this.map, draw, currentFeature: point});
     });
 
     return state;

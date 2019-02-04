@@ -73,6 +73,80 @@ class ImageLayer extends React.PureComponent {
         this.props.map.getSource(this.imageSourceId).setCoordinates(coordinates);
     }
 
+    handleKeyUp = e => {
+        if (this.props.locked) return;
+        if (this.rotationOnInsertion !== this.state.currentRotation) return;
+
+        let nudge = 1;
+        if (e.ctrlKey) nudge *= 10;
+
+        const changeSize = e.shiftKey;
+
+        if (e.keyCode === 37) {
+            // left
+            if (changeSize) {
+                this.setState(state => {
+                    const newWidth = state.width - nudge;
+                    const newHeight = newWidth * this.imageRatio;
+                    return {
+                        width: newWidth,
+                        height: newHeight,
+                    };
+                });
+            } else {
+                this.setState(state => ({left: state.left - nudge}));
+            }
+        } else if (e.keyCode === 38) {
+            // up
+            if (changeSize) {
+                this.setState(state => {
+                    const newHeight = state.height - nudge;
+                    const newWidth = newHeight / this.imageRatio;
+                    return {
+                        height: newHeight,
+                        width: newWidth,
+                    };
+                });
+            } else {
+                this.setState(state => ({top: state.top - nudge}));
+            }
+        } else if (e.keyCode === 39) {
+            // right
+            if (changeSize) {
+                this.setState(state => {
+                    const newWidth = state.width + nudge;
+                    const newHeight = newWidth * this.imageRatio;
+                    return {
+                        width: newWidth,
+                        height: newHeight,
+                    };
+                });
+            } else {
+                this.setState(state => ({left: state.left + nudge}));
+            }
+        } else if (e.keyCode === 40) {
+            // down
+            if (changeSize) {
+                this.setState(state => {
+                    const newHeight = state.height + nudge;
+                    const newWidth = newHeight / this.imageRatio;
+                    return {
+                        height: newHeight,
+                        width: newWidth,
+                    };
+                });
+            } else {
+                this.setState(state => ({top: state.top + nudge}));
+            }
+        } else {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopImmediatePropagation(); // stop mapbox moving the map
+        this.updateLayersFromState();
+    };
+
     handleMouseMove = e => {
         // ignore mousemove events after mouseup
         if (!this.state.dragInProgress) return;
@@ -168,6 +242,8 @@ class ImageLayer extends React.PureComponent {
     };
 
     componentDidMount = async () => {
+        window.addEventListener('keyup', this.handleKeyUp);
+
         const {map} = this.props;
         const canvas = map.getCanvas();
         this.rotationOnInsertion = round(map.getBearing(), 1);
@@ -234,6 +310,10 @@ class ImageLayer extends React.PureComponent {
             this.setPointsFromLatLngCoordinates();
         }
     }
+
+    componentWillUnmount = () => {
+        window.removeEventListener('keyup', this.handleKeyUp);
+    };
 
     render() {
         if (this.props.locked) return null;

@@ -4,7 +4,16 @@ const modifiedDefaultStyles = theme.map(defaultStyle => {
     if (defaultStyle.id === 'gl-draw-line-inactive') {
         return {
             ...defaultStyle,
-            filter: [...defaultStyle.filter, ['!=', 'user_isSnapGuide', 'true']],
+            filter: [
+                ...defaultStyle.filter,
+                [
+                    'all',
+                    ['!=', 'user_isSnapGuide', 'true'],
+                    ['!=', 'user_pam', 'true'],
+                    ['!=', 'id', 'shortest-path'],
+                    ['!=', 'id', 'route'],
+                ],
+            ],
         };
     }
 
@@ -26,7 +35,7 @@ const makePolygonStylePair = props => [
         paint: {
             'fill-color': props.fillColor,
             'fill-outline-color': props.borderColor,
-            'fill-opacity': 0.9,
+            'fill-opacity': 0.5,
         },
     },
     {
@@ -56,7 +65,7 @@ const makePointStylePair = props => [
         ],
         paint: {
             'circle-radius': 9,
-            'circle-color': '#fff',
+            'circle-color': props.borderColor,
         },
     },
     {
@@ -70,7 +79,7 @@ const makePointStylePair = props => [
         ],
         paint: {
             'circle-radius': 7,
-            'circle-color': '#1cd000',
+            'circle-color': props.fillColor,
         },
     },
 ];
@@ -96,12 +105,45 @@ const customDrawStyles = [
         fillColor: '#fff8eb',
         borderColor: '#e4d0bd',
     }),
+    {
+        id: `route-mesh-line`,
+        type: 'line',
+        filter: ['all', ['==', 'active', 'false'], ['==', 'user_featureType', 'routeSegment']],
+        layout: {
+            'line-cap': 'round',
+            'line-join': 'round',
+        },
+        paint: {
+            'line-color': '#909290',
+            'line-width': 1,
+            'line-dasharray': [4, 4],
+        },
+    },
+    {
+        id: `route-line`,
+        type: 'line',
+        filter: ['all', ['==', 'active', 'false'], ['==', 'id', 'route']],
+        layout: {
+            'line-cap': 'round',
+            'line-join': 'round',
+        },
+        paint: {
+            'line-color': '#6fb1ff',
+            'line-width': 4,
+            'line-dasharray': [2, 2],
+        },
+    },
+    ...modifiedDefaultStyles,
     ...makePointStylePair({
         featureType: 'anchor',
-        fillColor: '#fff8eb',
-        borderColor: '#e4d0bd',
+        fillColor: '#00d035',
+        borderColor: '#ffffff',
     }),
-    ...modifiedDefaultStyles,
+    ...makePointStylePair({
+        featureType: 'routeNode',
+        fillColor: '#505250',
+        borderColor: '#bdb3ac',
+    }),
     {
         id: 'pam-guide',
         type: 'line',

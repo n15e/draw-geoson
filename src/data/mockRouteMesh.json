@@ -1,0 +1,225 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "id": "58127be7-3d6d-486e-bd8c-da77487d439c",
+            "type": "Feature",
+            "properties": {
+                "featureType": "kiosk",
+                "name": "",
+                "pam": "true",
+                "display_point": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            -115.17396425,
+                            36.0871445
+                        ]
+                    }
+                }
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.1737837,
+                            36.0870485
+                        ],
+                        [
+                            -115.1737837,
+                            36.0872405
+                        ],
+                        [
+                            -115.1741448,
+                            36.0872405
+                        ],
+                        [
+                            -115.1741448,
+                            36.0870485
+                        ],
+                        [
+                            -115.1737837,
+                            36.0870485
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        },
+        {
+            "id": "3ca714dc-c3a0-4827-951e-20a752ecf79f",
+            "type": "Feature",
+            "properties": {
+                "featureType": "kiosk",
+                "name": "",
+                "pam": "true",
+                "display_point": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            -115.17653325,
+                            36.0878971
+                        ]
+                    }
+                }
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.1763274,
+                            36.0878011
+                        ],
+                        [
+                            -115.1763274,
+                            36.0879931
+                        ],
+                        [
+                            -115.1767391,
+                            36.0879931
+                        ],
+                        [
+                            -115.1767391,
+                            36.0878011
+                        ],
+                        [
+                            -115.1763274,
+                            36.0878011
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        },
+        {
+            "id": "51e4fd5d-00d8-4643-9476-b5b19734bba7",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.1747324,
+                        36.0870476
+                    ],
+                    [
+                        -115.1737827,
+                        36.0877181
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "68fa865c-157c-4d3a-a3bf-c31adfa547e1",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.175442,
+                        36.0871006
+                    ],
+                    [
+                        -115.1743431,
+                        36.0878945
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "d83b0d07-d99a-46d0-b0bb-5d20827a4de2",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.1762388,
+                        36.0871535
+                    ],
+                    [
+                        -115.1752018,
+                        36.0880474
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "c1f8bcdd-47d3-4686-9942-9d1090b57e5b",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.1739427,
+                        36.0871016
+                    ],
+                    [
+                        -115.1765335,
+                        36.0872898
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "fbe481ac-d3b2-4a99-b0cb-5b05880e123a",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.1738991,
+                        36.0874133
+                    ],
+                    [
+                        -115.1763661,
+                        36.0875368
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "4779c824-5d30-4e67-be02-907a3b404601",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.173819,
+                        36.0875368
+                    ],
+                    [
+                        -115.1765844,
+                        36.0878955
+                    ]
+                ],
+                "type": "LineString"
+            }
+        }
+    ]
+}
