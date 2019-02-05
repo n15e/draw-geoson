@@ -1,3 +1,4 @@
+/* eslint-disable */
 import findPath from './dijkstra';
 import preprocess from './preprocessor';
 import compactor from './compactor';

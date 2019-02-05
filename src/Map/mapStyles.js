@@ -1,5 +1,21 @@
 import theme from '@mapbox/mapbox-gl-draw/src/lib/theme';
 
+export const labelStyle = {
+    id: 'symbols',
+    type: 'symbol',
+    source: 'labels',
+    minzoom: 16.6,
+    layout: {
+        'text-field': '{destinationName}',
+        'text-size': 12,
+        'symbol-z-order': 'source',
+    },
+    paint: {
+        'text-color': '#725038',
+        'text-halo-color': '#ffffff',
+    },
+};
+
 const modifiedDefaultStyles = theme.map(defaultStyle => {
     if (defaultStyle.id === 'gl-draw-line-inactive') {
         return {
@@ -31,6 +47,7 @@ const makePolygonStylePair = props => [
     {
         id: `pam-${props.featureType}-fill`,
         type: 'fill',
+        minzoom: props.minzoom || 16,
         filter: ['all', ['==', 'active', 'false'], ['==', 'user_featureType', props.featureType]],
         paint: {
             'fill-color': props.fillColor,
@@ -41,6 +58,7 @@ const makePolygonStylePair = props => [
     {
         id: `${props.featureType}-line`,
         type: 'line',
+        minzoom: props.minzoom || 16,
         filter: ['all', ['==', 'active', 'false'], ['==', 'user_featureType', props.featureType]],
         layout: {
             'line-cap': 'round',
@@ -57,6 +75,7 @@ const makePointStylePair = props => [
     {
         id: `pam-${props.featureType}-fill`,
         type: 'circle',
+        minzoom: props.minzoom || 16,
         filter: [
             'all',
             ['==', 'active', 'false'],
@@ -71,6 +90,7 @@ const makePointStylePair = props => [
     {
         id: `${props.featureType}-line`,
         type: 'circle',
+        minzoom: props.minzoom || 16,
         filter: [
             'all',
             ['==', 'active', 'false'],
@@ -84,7 +104,7 @@ const makePointStylePair = props => [
     },
 ];
 
-const customDrawStyles = [
+export const drawStyles = [
     ...makePolygonStylePair({
         featureType: 'footprint',
         fillColor: '#ffffff',
@@ -108,6 +128,7 @@ const customDrawStyles = [
     {
         id: `route-mesh-line`,
         type: 'line',
+        minzoom: 19.5,
         filter: ['all', ['==', 'active', 'false'], ['==', 'user_featureType', 'routeSegment']],
         layout: {
             'line-cap': 'round',
@@ -122,6 +143,7 @@ const customDrawStyles = [
     {
         id: `route-line`,
         type: 'line',
+        minzoom: 15,
         filter: ['all', ['==', 'active', 'false'], ['==', 'id', 'route']],
         layout: {
             'line-cap': 'round',
@@ -138,14 +160,16 @@ const customDrawStyles = [
         featureType: 'anchor',
         fillColor: '#00d035',
         borderColor: '#ffffff',
+        minzoom: 19.5,
     }),
     ...makePointStylePair({
         featureType: 'routeNode',
-        fillColor: '#505250',
+        fillColor: '#757775',
         borderColor: '#bdb3ac',
+        minzoom: 19.5,
     }),
     {
-        id: 'pam-guide',
+        id: 'pam-snap-guide',
         type: 'line',
         filter: ['all', ['==', '$type', 'LineString'], ['==', 'user_isSnapGuide', 'true']],
         layout: {
@@ -159,5 +183,3 @@ const customDrawStyles = [
         },
     },
 ];
-
-export default customDrawStyles;

@@ -67,7 +67,8 @@
                             36.0871657
                         ]
                     }
-                }
+                },
+                "destinationId": "16084603003759290"
             },
             "geometry": {
                 "coordinates": [
@@ -342,42 +343,6 @@
                         [
                             -115.1737323,
                             36.0871512
-                        ]
-                    ]
-                ],
-                "type": "Polygon"
-            }
-        },
-        {
-            "id": "87112540-28c6-4306-9dd4-8460b35c0273",
-            "type": "Feature",
-            "properties": {
-                "category": "room",
-                "featureType": "unit",
-                "pam": "true"
-            },
-            "geometry": {
-                "coordinates": [
-                    [
-                        [
-                            -115.1748238,
-                            36.0879977
-                        ],
-                        [
-                            -115.1748238,
-                            36.0882237
-                        ],
-                        [
-                            -115.1743015,
-                            36.0882237
-                        ],
-                        [
-                            -115.1743015,
-                            36.0879977
-                        ],
-                        [
-                            -115.1748238,
-                            36.0879977
                         ]
                     ]
                 ],
@@ -1535,8 +1500,7 @@
                     "id": "21497641367625950",
                     "name": "ADBBD LLC"
                 },
-                "destinationId": "69355525098128660",
-                "destinationName": "Trotec Laser Inc"
+                "destinationId": "69355525098128660"
             },
             "geometry": {
                 "coordinates": [
@@ -2690,8 +2654,7 @@
                         ]
                     }
                 },
-                "destinationId": "12085537250605282",
-                "destinationName": "Mimaki"
+                "destinationId": "12085537250605282"
             },
             "geometry": {
                 "coordinates": [
@@ -3115,8 +3078,7 @@
                         ]
                     }
                 },
-                "destinationId": "56399628287456504",
-                "destinationName": "Pam Wayfinding"
+                "destinationId": "56399628287456504"
             },
             "geometry": {
                 "coordinates": [
@@ -3794,6 +3756,390 @@
                     ]
                 ],
                 "type": "LineString"
+            }
+        },
+        {
+            "id": "14ea6ad9-6d46-4bcb-ab51-b8c362779595",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.17366261617832,
+                        36.087823079372775
+                    ],
+                    [
+                        -115.1736627,
+                        36.0878417
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "c918cea3-ccaa-43a4-a36b-2d969ff6d373",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.1747621,
+                        36.0873267
+                    ],
+                    [
+                        -115.1747108,
+                        36.0873267
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "303bab32-e9a9-43b7-b348-d28da4a6f14d",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.1746841,
+                        36.0874824
+                    ],
+                    [
+                        -115.1746841,
+                        36.0873775
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "48c46bf0-1be2-4ae3-8ab0-2f80e4d923f0",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.1747053,
+                        36.0871327
+                    ],
+                    [
+                        -115.1747053,
+                        36.0871554
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "e1d9c8ac-0705-4dfc-a888-e64639e64189",
+            "type": "Feature",
+            "properties": {
+                "featureType": "routeSegment",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        -115.1747181,
+                        36.0871659
+                    ],
+                    [
+                        -115.1747597,
+                        36.0871659
+                    ]
+                ],
+                "type": "LineString"
+            }
+        },
+        {
+            "id": "9627770f-0ff6-4c1c-9469-3311299e8822",
+            "type": "Feature",
+            "properties": {
+                "featureType": "unit",
+                "category": "room",
+                "name": "",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.17347924240356,
+                            36.08808199839603
+                        ],
+                        [
+                            -115.1735836,
+                            36.0880823
+                        ],
+                        [
+                            -115.1735836,
+                            36.088171
+                        ],
+                        [
+                            -115.1740442,
+                            36.0881709
+                        ],
+                        [
+                            -115.17404441545115,
+                            36.088286994068454
+                        ],
+                        [
+                            -115.17358033879414,
+                            36.08828666378657
+                        ],
+                        [
+                            -115.17357905833752,
+                            36.08821294212256
+                        ],
+                        [
+                            -115.17347969604336,
+                            36.08821292036762
+                        ],
+                        [
+                            -115.17347924240356,
+                            36.08808199839603
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        },
+        {
+            "id": "946545f4-30c6-48cd-87b2-19e126745dfa",
+            "type": "Feature",
+            "properties": {
+                "featureType": "unit",
+                "category": "room",
+                "name": "",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.17430150495761,
+                            36.08817810831106
+                        ],
+                        [
+                            -115.17430111485528,
+                            36.08828727086999
+                        ],
+                        [
+                            -115.17445581981289,
+                            36.088287270869934
+                        ],
+                        [
+                            -115.17445640495761,
+                            36.08817810831106
+                        ],
+                        [
+                            -115.17430150495761,
+                            36.08817810831106
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        },
+        {
+            "id": "0c54790d-c328-40af-ad58-df3f4c90dc65",
+            "type": "Feature",
+            "properties": {
+                "featureType": "unit",
+                "category": "room",
+                "name": "",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.17604416857598,
+                            36.08684808295699
+                        ],
+                        [
+                            -115.1760439,
+                            36.0869552
+                        ],
+                        [
+                            -115.1766019,
+                            36.0869552
+                        ],
+                        [
+                            -115.1766019,
+                            36.08684462397079
+                        ],
+                        [
+                            -115.17604416857598,
+                            36.08684808295699
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        },
+        {
+            "id": "371f3713-543b-4029-8961-ce4a29b4c943",
+            "type": "Feature",
+            "properties": {
+                "featureType": "unit",
+                "category": "room",
+                "name": "",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.1758908,
+                            36.088016
+                        ],
+                        [
+                            -115.1760031,
+                            36.088016
+                        ],
+                        [
+                            -115.1760031,
+                            36.0880966
+                        ],
+                        [
+                            -115.1758908,
+                            36.0880966
+                        ],
+                        [
+                            -115.1758908,
+                            36.088016
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        },
+        {
+            "id": "e24ee4ed-a112-4b74-b467-57f658fdfdb9",
+            "type": "Feature",
+            "properties": {
+                "featureType": "unit",
+                "category": "room",
+                "name": "",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.1775236,
+                            36.0879271
+                        ],
+                        [
+                            -115.177735,
+                            36.0879274
+                        ],
+                        [
+                            -115.177735,
+                            36.0881921
+                        ],
+                        [
+                            -115.1775231,
+                            36.0881921
+                        ],
+                        [
+                            -115.1775236,
+                            36.0879271
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        },
+        {
+            "id": "eed00340-ac4d-4172-88f7-efdfb1f16396",
+            "type": "Feature",
+            "properties": {
+                "featureType": "unit",
+                "category": "room",
+                "name": "",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.1788406,
+                            36.0880875
+                        ],
+                        [
+                            -115.1788406,
+                            36.0881266
+                        ],
+                        [
+                            -115.17905559994925,
+                            36.08812670284801
+                        ],
+                        [
+                            -115.17905589690125,
+                            36.088087465700866
+                        ],
+                        [
+                            -115.1788406,
+                            36.0880875
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        },
+        {
+            "id": "2f4db36f-15a9-4f5c-87ec-378fdecbd541",
+            "type": "Feature",
+            "properties": {
+                "featureType": "unit",
+                "category": "room",
+                "name": "",
+                "pam": "true"
+            },
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -115.17892698249749,
+                            36.088087456039666
+                        ],
+                        [
+                            -115.17830620824004,
+                            36.08683417023126
+                        ],
+                        [
+                            -115.17843474470097,
+                            36.08683291639142
+                        ],
+                        [
+                            -115.17905611629942,
+                            36.088063453561176
+                        ],
+                        [
+                            -115.17905595448829,
+                            36.088087568548914
+                        ],
+                        [
+                            -115.17892698249749,
+                            36.088087456039666
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
             }
         }
     ]

@@ -1,4 +1,5 @@
 import React from 'react';
+import * as PropTypes from 'prop-types';
 import mapboxGl from 'mapbox-gl';
 import ImageLayer from './ImageLayer/ImageLayer';
 import {round} from './snapModes/snapUtils';
@@ -18,13 +19,10 @@ class Map extends React.PureComponent {
 
     componentDidMount() {
         this.map = mapUtils.initMap('mapbox-snap-map');
-        this.draw = mapUtils.getDraw();
 
         this.map.on('load', () => {
             // Tell the parent component the map is ready
             this.props.onMapReady({
-                map: this.map,
-                draw: this.draw,
                 rotation: round(this.map.getBearing(), 1), // potentially set from the URL
             });
         });
@@ -36,14 +34,6 @@ class Map extends React.PureComponent {
                 this.props.onRotationChange(Math.round(bearing * 1000) / 1000);
             }
         });
-
-        this.map.on('draw.selectionchange', ({features}) => {
-            if (features.length !== 1) {
-                this.props.setCurrentFeature(null);
-            } else {
-                this.props.setCurrentFeature(features[0].id);
-            }
-        });
     }
 
     render() {
@@ -51,12 +41,18 @@ class Map extends React.PureComponent {
             <div className={this.props.className}>
                 <div id="mapbox-snap-map" style={{height: '100%'}} />
 
-                {!!this.props.imageLayer && (
-                    <ImageLayer {...this.props.imageLayer} map={this.map} />
-                )}
+                {!!this.props.imageLayer && <ImageLayer {...this.props.imageLayer} />}
             </div>
         );
     }
 }
+
+Map.propTypes = {
+    className: PropTypes.string.isRequired,
+    imageLayer: PropTypes.object,
+    onMapReady: PropTypes.func.isRequired,
+    onRotationChange: PropTypes.func.isRequired,
+    rotation: PropTypes.number.isRequired,
+};
 
 export default Map;

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {round} from '../snapModes/snapUtils';
 import styles from './ImageLayer.module.css';
+import * as mapUtils from '../mapUtils';
 
 const getImageDimensions = async imageFile => {
     const objectUrl = URL.createObjectURL(imageFile);
@@ -33,7 +34,7 @@ class ImageLayer extends React.PureComponent {
     rotationOnInsertion = 0;
 
     setPointsFromLatLngCoordinates() {
-        const {map} = this.props;
+        const map = mapUtils.getMap();
         const coordinates = map.getSource(this.imageSourceId).coordinates;
 
         const nw = map.project(coordinates[0]);
@@ -52,7 +53,7 @@ class ImageLayer extends React.PureComponent {
     }
 
     getLngLatCoordinatesFromPoints() {
-        const {map} = this.props;
+        const map = mapUtils.getMap();
         const {top, left, width, height} = this.state;
 
         const right = left + width;
@@ -70,7 +71,8 @@ class ImageLayer extends React.PureComponent {
 
     updateLayersFromState() {
         const coordinates = this.getLngLatCoordinatesFromPoints();
-        this.props.map.getSource(this.imageSourceId).setCoordinates(coordinates);
+        const map = mapUtils.getMap();
+        map.getSource(this.imageSourceId).setCoordinates(coordinates);
     }
 
     handleKeyUp = e => {
@@ -143,7 +145,6 @@ class ImageLayer extends React.PureComponent {
         }
 
         e.preventDefault();
-        e.stopImmediatePropagation(); // stop mapbox moving the map
         this.updateLayersFromState();
     };
 
@@ -244,7 +245,7 @@ class ImageLayer extends React.PureComponent {
     componentDidMount = async () => {
         window.addEventListener('keyup', this.handleKeyUp);
 
-        const {map} = this.props;
+        const map = mapUtils.getMap();
         const canvas = map.getCanvas();
         this.rotationOnInsertion = round(map.getBearing(), 1);
 
@@ -296,6 +297,7 @@ class ImageLayer extends React.PureComponent {
             insertBefore
         );
 
+        // TODO (davidg): map.off('move') if/when I can remove an imageLayer
         map.on('move', () => {
             // Update the UI when the map moves
             if (!this.props.locked) {
@@ -393,7 +395,6 @@ class ImageLayer extends React.PureComponent {
 
 ImageLayer.propTypes = {
     imageFile: PropTypes.any,
-    map: PropTypes.object,
     locked: PropTypes.bool,
 };
 

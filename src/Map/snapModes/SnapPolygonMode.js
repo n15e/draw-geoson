@@ -15,7 +15,7 @@ import {
 
 const SnapPolygonMode = {...DrawPolygon};
 
-SnapPolygonMode.onSetup = function({draw, onAdd, properties = {}}) {
+SnapPolygonMode.onSetup = function({onAdd, properties = {}}) {
     const polygon = this.newFeature(
         makeFeature({
             type: Constants.geojsonTypes.POLYGON,
@@ -35,10 +35,8 @@ SnapPolygonMode.onSetup = function({draw, onAdd, properties = {}}) {
     // A dog's breakfast
     const state = {
         currentVertexPosition: 0,
-        draw,
         guides: findGuidesFromFeatures({
             map: this.map,
-            draw,
             currentFeature: polygon,
         }),
         horizontalGuide,
@@ -51,7 +49,7 @@ SnapPolygonMode.onSetup = function({draw, onAdd, properties = {}}) {
 
     this.map.on('moveend', () => {
         // Update the guide locations after zoom, pan, rotate, or resize
-        state.guides = findGuidesFromFeatures({map: this.map, draw, currentFeature: polygon});
+        state.guides = findGuidesFromFeatures({map: this.map, currentFeature: polygon});
     });
 
     return state;
@@ -107,7 +105,9 @@ SnapPolygonMode.onStop = function(state) {
     this.deleteFeature(IDS.VERTICAL_GUIDE, {silent: true});
     this.deleteFeature(IDS.HORIZONTAL_GUIDE, {silent: true});
 
-    state.onAdd(state.polygon);
+    if (state.polygon && state.polygon.coordinates.length > 2) {
+        state.onAdd(state.polygon);
+    }
 
     // This relies on the the state of SnapPolygonMode being similar to DrawPolygon
     DrawPolygon.onStop.call(this, state);

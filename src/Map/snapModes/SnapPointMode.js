@@ -14,7 +14,7 @@ import {
 
 const SnapPointMode = {...DrawPoint};
 
-SnapPointMode.onSetup = function({draw, properties = {}}) {
+SnapPointMode.onSetup = function({properties = {}}) {
     const point = this.newFeature(
         makeFeature({
             type: Constants.geojsonTypes.POINT,
@@ -33,8 +33,7 @@ SnapPointMode.onSetup = function({draw, properties = {}}) {
 
     // A dog's breakfast
     const state = {
-        draw,
-        guides: findGuidesFromFeatures({map: this.map, draw, currentFeature: point}),
+        guides: findGuidesFromFeatures({map: this.map, currentFeature: point}),
         horizontalGuide,
         map: this.map,
         point,
@@ -42,9 +41,10 @@ SnapPointMode.onSetup = function({draw, properties = {}}) {
         verticalGuide,
     };
 
+    // TODO (davidg): I should be doing this.map.off() too
     this.map.on('moveend', () => {
         // Update the guide locations after zoom, pan, rotate, or resize
-        state.guides = findGuidesFromFeatures({map: this.map, draw, currentFeature: point});
+        state.guides = findGuidesFromFeatures({map: this.map, currentFeature: point});
     });
 
     return state;

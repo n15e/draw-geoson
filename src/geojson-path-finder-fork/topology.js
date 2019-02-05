@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {explode} from '@turf/turf';
 import roundCoord from './round-coord';
 

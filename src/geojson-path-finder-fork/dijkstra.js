@@ -1,10 +1,11 @@
+/* eslint-disable */
 import Queue from 'tinyqueue';
 
 export default function(graph, start, end) {
     const costs = {};
     costs[start] = 0;
     const initialState = [0, [start], start];
-    const queue = new Queue([initialState], (a, b) => a[0] - b[0]));
+    const queue = new Queue([initialState], (a, b) => a[0] - b[0]);
     const explored = {};
 
     while (queue.length) {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {getCoord} from '@turf/invariant';
 import {radiansToDistance} from '@turf/helpers';
 

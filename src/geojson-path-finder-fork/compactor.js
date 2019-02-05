@@ -1,3 +1,4 @@
+/* eslint-disable */
 function findNextEnd(prev, v, vertices, ends, vertexCoords, edgeData, trackIncoming, options) {
     let weight = vertices[prev][v];
 

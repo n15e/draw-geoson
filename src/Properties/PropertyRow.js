@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {withStyles} from '@material-ui/core';
 import TableCell from '@material-ui/core/es/TableCell/TableCell';
 import TableRow from '@material-ui/core/TableRow/TableRow';
 import Input from '@material-ui/core/Input/Input';
-import MenuItem from '@material-ui/core/es/MenuItem/MenuItem';
 import Select from '@material-ui/core/Select/Select';
 
 const styles = {
@@ -24,13 +23,16 @@ const styles = {
     fullWidth: {
         width: '100%',
     },
+    select: {
+        paddingLeft: 8,
+    },
 };
 
 const PropertyRow = props => {
     const {classes, name, value} = props;
     const showSelect = props.options;
     const showInput = props.editable && !props.options;
-    const showStatic = !props.editable;
+    const showStatic = !showInput && !showSelect;
 
     return (
         <TableRow className={classes.row}>
@@ -54,14 +56,22 @@ const PropertyRow = props => {
                         onChange={e => {
                             props.onChange(props.propertyName, e.target.value);
                         }}
-                        className={classes.fullWidth}
+                        classes={{
+                            root: classes.fullWidth,
+                            select: classes.select,
+                        }}
                         disableUnderline
+                        native
                     >
-                        {props.options.map(option => (
-                            <MenuItem key={option.code} value={option.code}>
-                                {option.name}
-                            </MenuItem>
-                        ))}
+                        <React.Fragment>
+                            <option value="" />
+
+                            {props.options.map(option => (
+                                <option key={option.code} value={option.code}>
+                                    {option.name}
+                                </option>
+                            ))}
+                        </React.Fragment>
                     </Select>
                 )}
 
@@ -84,6 +94,7 @@ PropertyRow.propTypes = {
     value: PropTypes.any,
     onChange: PropTypes.func,
     editable: PropTypes.bool,
+    native: PropTypes.bool,
 };
 
 export default withStyles(styles)(PropertyRow);

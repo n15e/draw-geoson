@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import uuid from 'uuid/v4';
 import Constants from '@mapbox/mapbox-gl-draw/src/constants';
+import * as mapUtils from '../mapUtils';
 
 export const IDS = {
     VERTICAL_GUIDE: 'VERTICAL_GUIDE',
@@ -80,13 +81,12 @@ export const addPointToGuides = (guides, point, forceInclusion) => {
  *
  * @param {object} props
  * @param props.map
- * @param props.draw
  * @param props.currentFeature
- * @param {function} [props.snapFilter]
+ * @param {function} [props.snapFilter] a function that returns true for features to snap to
  * @returns {{vertical: Array, horizontal: Array}}
  */
-export const findGuidesFromFeatures = ({map, draw, currentFeature, snapFilter}) => {
-    const features = draw.getAll().features.filter(feature => {
+export const findGuidesFromFeatures = ({map, currentFeature, snapFilter}) => {
+    const features = mapUtils.getAllFeatures().filter(feature => {
         if (snapFilter) return snapFilter(feature);
 
         return feature.properties.pam === 'true';

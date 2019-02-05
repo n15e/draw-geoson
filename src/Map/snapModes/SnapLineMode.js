@@ -15,7 +15,7 @@ import {
 
 const SnapLineMode = {...DrawLine};
 
-SnapLineMode.onSetup = function({draw, onAdd = () => {}, properties = {}, snapFilter}) {
+SnapLineMode.onSetup = function({onAdd = () => {}, properties = {}, snapFilter}) {
     const line = this.newFeature(
         makeFeature({
             type: Constants.geojsonTypes.LINE_STRING,
@@ -35,8 +35,7 @@ SnapLineMode.onSetup = function({draw, onAdd = () => {}, properties = {}, snapFi
     // A dog's breakfast
     const state = {
         currentVertexPosition: 0,
-        draw,
-        guides: findGuidesFromFeatures({map: this.map, draw, currentFeature: line, snapFilter}),
+        guides: findGuidesFromFeatures({map: this.map, currentFeature: line, snapFilter}),
         horizontalGuide,
         map: this.map,
         line,
@@ -51,7 +50,6 @@ SnapLineMode.onSetup = function({draw, onAdd = () => {}, properties = {}, snapFi
         // Update the guide locations after zoom, pan, rotate, or resize
         state.guides = findGuidesFromFeatures({
             map: this.map,
-            draw,
             currentFeature: line,
             snapFilter,
         });

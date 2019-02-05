@@ -1,3 +1,4 @@
+/* eslint-disable */
 import distance from '@turf/distance';
 import point from 'turf-point';
 import topology from './topology';
